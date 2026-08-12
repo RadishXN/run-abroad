@@ -203,19 +203,100 @@ input[type="number"], select {
   appearance: none;
 }
 
-/* 自绘下拉箭头 */
-select {
-  padding-right: var(--s6);
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--faint) 50%),
-    linear-gradient(135deg, var(--faint) 50%, transparent 50%);
-  background-position: right 7px center, right 2px center;
-  background-size: 5px 5px, 5px 5px;
-  background-repeat: no-repeat;
-  cursor: pointer;
-}
-select:invalid { color: var(--faint); }
 input[type="number"]::placeholder { color: var(--faint); }
+
+/* ── 自绘下拉框 ──────────────────────────────
+   原生 select 保留在 DOM 里但透明覆盖在原位：仍可聚焦、
+   仍参与表单校验，只是视觉上由下面的按钮接管。 */
+
+.sel { position: relative; }
+
+.sel > select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;   /* 交互全部交给自绘按钮 */
+}
+
+.sel-btn {
+  width: 100%;
+  padding: 10px var(--s6) 10px 0;
+  font: inherit;
+  font-size: 15.5px;
+  text-align: left;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  cursor: pointer;
+  transition: border-color .18s, box-shadow .18s;
+}
+.sel-btn.is-placeholder { color: var(--faint); }
+.sel-btn:hover { border-bottom-color: var(--muted); }
+.sel-btn:focus-visible {
+  outline: none;
+  border-bottom-color: var(--accent);
+  box-shadow: 0 1px 0 0 var(--accent);
+}
+
+/* 箭头 */
+.sel-btn::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  width: 7px; height: 7px;
+  margin-top: -5px;
+  border-right: 1.5px solid var(--faint);
+  border-bottom: 1.5px solid var(--faint);
+  transform: rotate(45deg);
+  transition: transform .18s;
+  pointer-events: none;
+}
+.sel-btn[aria-expanded="true"]::after { transform: rotate(-135deg); margin-top: -2px; }
+
+.sel.is-invalid .sel-btn { border-bottom-color: var(--far); }
+
+.sel-list {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  max-height: 264px;
+  overflow-y: auto;
+  padding: var(--s1);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-md);
+  animation: drop .14s ease-out;
+}
+@keyframes drop {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.sel-opt {
+  padding: 9px var(--s3);
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  white-space: normal;
+}
+.sel-opt:hover, .sel-opt.is-active { background: var(--bg-tint); color: var(--ink); }
+.sel-opt.is-chosen {
+  color: var(--accent);
+  font-weight: 600;
+}
+.sel-opt.is-chosen::after {
+  content: '✓';
+  float: right;
+  font-weight: 400;
+}
 
 input[type="number"]:hover, select:hover { border-bottom-color: var(--muted); }
 input[type="number"]:focus, select:focus {

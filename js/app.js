@@ -85,7 +85,133 @@ function buildForm() {
     .map(([k, v]) => chip('skill', k, v)).join('');
   $('#goals').innerHTML = Object.entries(GOALS)
     .map(([k, v]) => chip('goal', k, v)).join('');
+
+  $$('select').forEach(enhanceSelect);
 }
+
+/* ── 自绘下拉框 ─────────────────────────────
+   原生 <select> 展开后的弹层由操作系统绘制，CSS 管不到，
+   在 Windows 上和页面风格差异很大。这里用一个自绘列表接管交互，
+   但把原生 select 保留在 DOM 里（透明覆盖在原位）——
+   这样表单校验、URL 同步、读屏器都仍然基于它工作。
+   ------------------------------------------------ */
+
+let openSel = null;
+
+function enhanceSelect(sel) {
+  if (sel.dataset.enhanced) return;
+  sel.dataset.enhanced = '1';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'sel';
+  sel.parentNode.insertBefore(wrap, sel);
+  wrap.appendChild(sel);
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'sel-btn';
+  btn.setAttribute('aria-haspopup', 'listbox');
+  btn.setAttribute('aria-expanded', 'false');
+
+  const list = document.createElement('div');
+  list.className = 'sel-list';
+  list.setAttribute('role', 'listbox');
+  list.hidden = true;
+
+  [...sel.options].forEach((o) => {
+    if (o.value === '') return;               // 占位项不进列表
+    const item = document.createElement('div');
+    item.className = 'sel-opt';
+    item.setAttribute('role', 'option');
+    item.dataset.value = o.value;
+    item.textContent = o.textContent;
+    list.appendChild(item);
+  });
+
+  wrap.append(btn, list);
+
+  const opts = () => [...list.children];
+  const close = () => {
+    list.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    if (openSel === wrap) openSel = null;
+  };
+  const open = () => {
+    if (openSel && openSel !== wrap) openSel.querySelector('.sel-list').hidden = true;
+    openSel = wrap;
+    list.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    const cur = opts().find((o) => o.dataset.value === sel.value) || opts()[0];
+    cur?.scrollIntoView({ block: 'nearest' });
+    setActive(opts().indexOf(cur));
+  };
+
+  let active = -1;
+  const setActive = (i) => {
+    active = Math.max(0, Math.min(opts().length - 1, i));
+    opts().forEach((o, n) => o.classList.toggle('is-active', n === active));
+    opts()[active]?.scrollIntoView({ block: 'nearest' });
+  };
+
+  const pick = (item) => {
+    sel.value = item.dataset.value;
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+    syncSelectUI(sel);
+    close();
+    btn.focus();
+  };
+
+  btn.addEventListener('click', () => (list.hidden ? open() : close()));
+
+  btn.addEventListener('keydown', (e) => {
+    if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(e.key)) { e.preventDefault(); open(); }
+  });
+
+  list.addEventListener('click', (e) => {
+    const item = e.target.closest('.sel-opt');
+    if (item) pick(item);
+  });
+
+  wrap.addEventListener('keydown', (e) => {
+    if (list.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); close(); btn.focus(); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); setActive(active + 1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(active - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); setActive(0); }
+    else if (e.key === 'End') { e.preventDefault(); setActive(opts().length - 1); }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(opts()[active]); }
+    else if (e.key === 'Tab') close();
+  });
+
+  // 原生校验失败时，把焦点引到自绘按钮上，提示才落在正确的位置
+  sel.addEventListener('invalid', () => { wrap.classList.add('is-invalid'); });
+  sel.addEventListener('change', () => wrap.classList.remove('is-invalid'));
+
+  syncSelectUI(sel);
+}
+
+/** 把原生 select 的当前值反映到自绘 UI 上（URL 回填时也要调用）。 */
+function syncSelectUI(sel) {
+  const wrap = sel.closest('.sel');
+  if (!wrap) return;
+  const btn = wrap.querySelector('.sel-btn');
+  const chosen = sel.options[sel.selectedIndex];
+  const isPlaceholder = !sel.value;
+  btn.textContent = chosen ? chosen.textContent : '请选择';
+  btn.classList.toggle('is-placeholder', isPlaceholder);
+  wrap.querySelectorAll('.sel-opt').forEach((o) => {
+    o.setAttribute('aria-selected', String(o.dataset.value === sel.value));
+    o.classList.toggle('is-chosen', o.dataset.value === sel.value);
+  });
+}
+
+document.addEventListener('click', (e) => {
+  if (openSel && !openSel.contains(e.target)) {
+    openSel.querySelector('.sel-list').hidden = true;
+    openSel.querySelector('.sel-btn').setAttribute('aria-expanded', 'false');
+    openSel = null;
+  }
+});
 
 function chip(group, value, label) {
   return `<label class="chip">
@@ -287,6 +413,7 @@ function loadFromUrl() {
   check('skill', q.get('s'));
   check('goal', q.get('t'));
   check('lang', q.get('lg'));
+  $$('select').forEach(syncSelectUI);   // 回填后让自绘按钮显示正确的选项
   return true;
 }
 
