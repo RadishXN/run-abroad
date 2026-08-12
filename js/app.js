@@ -362,6 +362,7 @@ function card(r, i = 0) {
           </div>
         </div>
         <div class="badges">
+          ${r.skillMatch ? '<span class="badge match">✓ 你的职业方向在清单上</span>' : ''}
           <span class="badge type">${TYPE_LABEL[p.type]}</span>
           <span class="badge diff" title="办理难度">难度 ${'●'.repeat(p.difficulty)}${'○'.repeat(5 - p.difficulty)}</span>
         </div>

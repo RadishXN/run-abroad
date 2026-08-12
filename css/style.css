@@ -631,6 +631,12 @@ button { font: inherit; cursor: pointer; transition: all .16s; }
   white-space: nowrap;
 }
 .badge.diff { letter-spacing: 1.6px; font-size: 9.5px; border-color: transparent; }
+.badge.match {
+  color: var(--ok);
+  border-color: color-mix(in srgb, var(--ok) 35%, transparent);
+  background: var(--ok-wash);
+  font-weight: 600;
+}
 
 .facts {
   display: grid;

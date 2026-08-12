@@ -107,12 +107,15 @@ function checkPathway(profile, p) {
     gaps.push({ kind: SOFT, field: 'jobOffer', text: '需要当地雇主的工作 offer' });
   }
 
-  // 技能方向（满足其一即可）
-  if (req.skills && req.skills.length) {
-    const hit = req.skills.some((s) => profile.skills.includes(s));
-    if (!hit) {
+  // 技能方向（满足其一即可）。
+  // 用户没勾选任何技能时视为「未提供」——既不加分也不扣分，
+  // 否则跳过这一项的人会在所有职业类路径上凭空多出一个缺口。
+  let skillMatch = false;
+  if (req.skills && req.skills.length && profile.skills.length) {
+    skillMatch = req.skills.some((s) => profile.skills.includes(s));
+    if (!skillMatch) {
       const names = req.skills.map((s) => SKILLS[s]).join(' / ');
-      gaps.push({ kind: SOFT, field: 'skills', text: `更适合这些背景：${names}` });
+      gaps.push({ kind: SOFT, field: 'skills', text: `这条路主要面向：${names}` });
     }
   }
 
@@ -125,18 +128,24 @@ function checkPathway(profile, p) {
   else if (softGaps.length <= 2) status = 'close';
   else status = 'stretch';
 
-  return { pathway: p, status, hardGaps, softGaps, score: scoreOf(profile, p, status, softGaps) };
+  return {
+    pathway: p, status, hardGaps, softGaps, skillMatch,
+    score: scoreOf(profile, p, status, softGaps, skillMatch),
+  };
 }
 
 /**
  * 打分只用于排序，不代表「成功率」。
  * 基准分按 status 给，再根据用户目标做偏好加权。
  */
-function scoreOf(profile, p, status, softGaps) {
+function scoreOf(profile, p, status, softGaps, skillMatch) {
   let score = { eligible: 70, close: 50, stretch: 30, blocked: 0 }[status];
   if (status === 'blocked') return 0;
 
   score -= softGaps.length * 6;
+
+  // 职业方向对上了紧缺清单，是很强的正面信号，往前排
+  if (skillMatch) score += 10;
 
   const goals = profile.goals || [];
   const isPR = /永居|绿卡|永久居民|是$/.test(p.pr || '');
