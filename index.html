@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>润学导航 · 我能怎么出国？</title>
+<meta name="description" content="填写年龄、学历、语言、技能，一次性看清自己能走哪些出国路径，以及还差什么。纯静态、开源、不收集任何数据。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>我能怎么润？</h1>
+    <p class="lead">
+      填 8 项基本信息，从 <b id="total">0</b> 条签证 / 移民路径里筛出适合你的，
+      并告诉你<strong>还差什么</strong>。
+    </p>
+    <p class="privacy">全部计算在你的浏览器里完成 · 不上传、不存储、无后端</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <form id="form" class="panel">
+    <div class="grid">
+      <label class="field">
+        <span>年龄</span>
+        <input type="number" id="age" min="15" max="80" value="26" required>
+      </label>
+
+      <label class="field">
+        <span>最高学历</span>
+        <select id="degree"></select>
+      </label>
+
+      <label class="field">
+        <span>院校层次</span>
+        <select id="uniRank"></select>
+        <small>很多签证只认世界排名前 50 / 100 / 200 的学校</small>
+      </label>
+
+      <label class="field">
+        <span>学位在哪读的</span>
+        <select id="studyLoc"></select>
+        <small>香港 IANG、英国 PSW 等只认当地院校的学位</small>
+      </label>
+
+      <label class="field">
+        <span>毕业多久了</span>
+        <select id="gradYears"></select>
+        <small>找工作签普遍有毕业 3–5 年的窗口期</small>
+      </label>
+
+      <label class="field">
+        <span>英语水平</span>
+        <select id="english"></select>
+      </label>
+
+      <label class="field">
+        <span>全职工作经验</span>
+        <select id="workExp"></select>
+      </label>
+
+      <label class="field">
+        <span>可动用资金</span>
+        <select id="funds"></select>
+        <small>用于资金证明 / 封锁账户 / 申请费</small>
+      </label>
+
+      <label class="field checkbox">
+        <input type="checkbox" id="hasOffer">
+        <span>已经有海外雇主的 offer</span>
+      </label>
+    </div>
+
+    <fieldset>
+      <legend>技能方向<em>可多选，影响技术移民和人才类签证的匹配</em></legend>
+      <div id="skills" class="chips"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>你的诉求<em>可多选，影响排序</em></legend>
+      <div id="goals" class="chips"></div>
+    </fieldset>
+
+    <button type="submit" class="primary">看看我能走哪条路</button>
+  </form>
+
+  <div id="results" hidden>
+    <div id="summary" class="panel summary"></div>
+
+    <div class="filterbar">
+      <label class="switch">
+        <input type="checkbox" id="onlyDeveloped">
+        <span>只看发达国家 / 地区</span>
+      </label>
+      <span id="filterNote" class="filter-note"></span>
+      <button id="copyLink" class="ghost">复制结果链接</button>
+    </div>
+
+    <div id="groups"></div>
+  </div>
+
+  <section class="panel disclaimer">
+    <h2>请务必读一下</h2>
+    <ul>
+      <li><b>这是初筛工具，不是法律意见。</b>结果只说明「值得去查哪几条路」，不代表你一定能申请成功。</li>
+      <li><b>移民政策变得很快。</b>薪资门槛、名额、认可院校名单几乎每年都调整，每张卡片底部都有官网链接，最终以官网为准。</li>
+      <li><b>警惕中介。</b>本项目列出的绝大多数路径都可以自己 DIY 申请。任何声称「包过」「内部名额」的都要高度警惕。</li>
+      <li><b>数据可能有错。</b>欢迎在 GitHub 提 Issue 或 PR 纠正，见下方仓库链接。</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>开源项目 · MIT License · 欢迎 PR 补充路径和纠错</p>
+    <p><a href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub 仓库</a></p>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
