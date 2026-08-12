@@ -104,7 +104,8 @@ function checkPathway(profile, p) {
 
   // 工作 offer
   if (req.jobOffer && !profile.hasOffer) {
-    gaps.push({ kind: SOFT, field: 'jobOffer', text: '需要当地雇主的工作 offer' });
+    // 用「合同」覆盖工作 offer、学徒培训合同、季节工用工合同等多种情形
+    gaps.push({ kind: SOFT, field: 'jobOffer', text: '需要先拿到当地的工作 / 培训合同' });
   }
 
   // 技能方向（满足其一即可）。
