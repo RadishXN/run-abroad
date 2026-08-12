@@ -70,6 +70,14 @@ function checkPathway(profile, p) {
     });
   }
 
+  // 小语种：某条路径的开关，有就能走，没有就走不了
+  if (req.otherLang && !(profile.langs || []).includes(req.otherLang.code)) {
+    gaps.push({
+      kind: SOFT, field: 'otherLang',
+      text: `需要${req.otherLang.label}水平`,
+    });
+  }
+
   // 工作经验
   if (req.workExp != null && profile.workExp < req.workExp) {
     gaps.push({
@@ -194,6 +202,7 @@ function bottlenecks(bucket) {
     gradWithin: '尽快在毕业窗口期内行动',
     studyIn: '考虑先去目标国家读一个学位',
     french: '学法语到 NCLC 7（加拿大法语通道分数线远低于常规轮次）',
+    otherLang: '学一门小语种（德语开职业教育，日语开日本本地路径）',
   };
   return Object.entries(count)
     .sort((a, b) => b[1] - a[1])

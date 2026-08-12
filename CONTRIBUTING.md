@@ -27,6 +27,7 @@
     gradWithin: 5,                 // 毕业几年内
     minEng: ENG.ielts55,           // none/daily/ielts55/ielts65/fluent
     minFrench: FRA.nclc7,          // none/basic/mid/nclc7（法语单独建模）
+    otherLang: { code: 'de', label: '德语 B1–B2' },  // 小语种开关，code 见 LANGS
     workExp: 3,                    // 最低工作年限
     jobOffer: true,                // 是否需要当地 offer
     fundsUSD: 3000,                // 资金证明（美元）
@@ -51,6 +52,7 @@
 | `skilled` | 技术移民 |
 | `work` | 工作签证（需 offer） |
 | `study` | 留学转移民 |
+| `vocational` | 职业教育 / 学徒（不看文凭看手艺的路径） |
 | `nomad` | 数字游民 |
 | `invest` | 创业 / 投资 |
 | `soft` | 软着陆 / 落脚点 |

@@ -23,6 +23,19 @@ const ENG_LABEL = ['几乎不会', '日常交流', '雅思 5.5 / CET-6 水平', 
 const FRA = { none: 0, basic: 1, mid: 2, nclc7: 3 };
 const FRA_LABEL = ['不会法语', '入门 (A1–A2)', '中级 (NCLC 5–6)', 'NCLC 7+ / TEF B2 以上'];
 
+/**
+ * 其他小语种。这里只记「有没有达到能用的水平」，不分档 ——
+ * 因为它们通常是某条路径的开关（有就能走，没有就走不了），
+ * 不像英语法语那样每一档都对应不同的签证。
+ */
+const LANGS = {
+  de: '德语',
+  ja: '日语',
+  ko: '韩语',
+  es: '西班牙语',
+  nordic: '北欧语言（芬兰语/挪威语/瑞典语等）',
+};
+
 /** 学位就读地 —— 部分路径要求学位必须在当地取得（如香港 IANG、英国 PSW）。 */
 const STUDY_LOC = {
   cn: '中国大陆',
@@ -68,6 +81,9 @@ const GOALS = {
 const DEVELOPED = new Set([
   '美国', '加拿大', '英国', '爱尔兰', '德国', '法国', '荷兰', '葡萄牙', '西班牙',
   '日本', '韩国', '新加坡', '中国香港', '澳大利亚', '新西兰',
+  '芬兰', '挪威', '斯洛文尼亚', '克罗地亚',
+  // 「欧盟」是跨国路径，按发达经济体处理；波兰、厄瓜多尔按 IMF 口径属新兴经济体
+  '欧盟',
 ]);
 
 const TYPE_LABEL = {
@@ -77,6 +93,7 @@ const TYPE_LABEL = {
   skilled: '技术移民',
   work: '工作签证',
   study: '留学转移民',
+  vocational: '职业教育 / 学徒',
   nomad: '数字游民',
   invest: '创业 / 投资',
   soft: '软着陆 / 落脚点',
@@ -505,6 +522,36 @@ const PATHWAYS = [
     official: 'https://www.study-in-germany.de/',
   },
 
+  // ─────────────── 职业教育（不看文凭，看手艺） ───────────────
+  {
+    id: 'de-ausbildung',
+    country: '德国', flag: '🇩🇪',
+    name: '双元制职业培训 (Ausbildung)', nameEn: 'Duale Ausbildung',
+    type: 'vocational',
+    duration: '2–3.5 年培训期，结业后可转工签',
+    pr: '结业工作满 2 年左右可申永居（德语好可再缩短）',
+    req: { minDeg: DEG.highschool, otherLang: { code: 'de', label: '德语 B1–B2' } },
+    quota: '无统一名额，取决于能否拿到企业培训岗位',
+    cost: '免学费，且培训期间企业发工资（约每月 €1,000–1,200，逐年递增）',
+    difficulty: 3,
+    notes: '欧洲少数认手艺不认文凭的通道，对学历不高的人是真正的入口。初中/高中学历即可申请，护理、餐饮、机电、物流、酒店等行业常年缺人。真正的门槛是德语：几乎所有岗位要求 B1–B2，从零学到 B2 通常要 1–1.5 年。培训期边学边挣，不需要资金证明，这点和留学路线完全不同。结业后是德国认可的职业资格，可直接转工作签证。',
+    official: 'https://www.make-it-in-germany.com/en/study-training/training',
+  },
+  {
+    id: 'fi-vet',
+    country: '芬兰', flag: '🇫🇮',
+    name: '职业教育 (VET)', nameEn: 'Vocational Education and Training',
+    type: 'vocational',
+    duration: '学制约 2–3 年（180 学分）',
+    pr: '毕业后找到全职工作可转工签，累计居住满 4–5 年可申永居',
+    req: { age: [18, 99], minDeg: DEG.highschool, minEng: ENG.ielts55, fundsUSD: 8000 },
+    quota: '按项目招生，英语授课项目数量有限',
+    cost: '公立职业教育免学费，但需自备生活费（约 €800–1,200/月）',
+    difficulty: 3,
+    notes: '免学费、入学门槛低（雅思 5.0–5.5 或多邻国 85 即可）、年龄无上限，是北欧少见的低门槛入口。学习期间每周可打工 20–30 小时，可携带家属且配偶可工作。主要难点：英语授课的项目少，需要自己盯招生周期；芬兰住房和生活成本高，免学费不等于低成本。',
+    official: 'https://www.oph.fi/en/education-system/vocational-education-and-training-finland',
+  },
+
   // ─────────────── 数字游民 / 远程工作 ───────────────
   {
     id: 'pt-d8',
@@ -512,12 +559,12 @@ const PATHWAYS = [
     name: 'D8 数字游民签证', nameEn: 'Digital Nomad Visa (D8)',
     type: 'nomad',
     duration: '首次 2 年，可续 3 年',
-    pr: '合法居住 5 年可申永居并可入籍',
+    pr: '合法居住约 5 年可申永居；入籍已收紧至 10 年',
     req: { minEng: ENG.daily, fundsUSD: 3800 },
     quota: '无',
     cost: '申请费约 €180 + 住址证明 + 医疗保险',
     difficulty: 3,
-    notes: '欧洲数字游民签里最有价值的一条：因为它通往葡萄牙国籍（5 年，且实际居住要求宽松）。要求境外远程收入达到葡萄牙最低工资约 4 倍的月收入水平。需要提供劳动合同或客户合同证明。',
+    notes: '⚠️ 2026 年 5 月 19 日生效的新国籍法大幅收紧：一般申请人入籍居住年限由 5 年延长至 10 年（欧盟及葡语国家国民为 7 年），且起算点从递交申请日改为居留卡签发日，另加语言与历史文化测试。2026 年 5 月 18 日前已递交的入籍申请仍按旧法处理。此前「5 年拿护照」的说法已经作废，但作为居留路径仍然有效：要求境外远程收入达到葡萄牙最低工资约 4 倍的月收入水平，需提供劳动合同或客户合同证明。',
     official: 'https://www.vistos.mne.gov.pt/en/national-visas/necessary-documentation/remote-work-visa',
   },
   {
@@ -563,6 +610,121 @@ const PATHWAYS = [
     official: 'https://mdec.my/derantau',
   },
 
+  {
+    id: 'no-selfemployed',
+    country: '挪威', flag: '🇳🇴',
+    name: '自雇 / 独立承包人居留', nameEn: 'Residence permit for self-employed persons',
+    type: 'nomad',
+    duration: '最长 2 年',
+    pr: '连续居住满 3 年可申永居',
+    req: { minDeg: DEG.bachelor, minEng: ENG.ielts55, fundsUSD: 45000 },
+    quota: '无',
+    cost: '申请费约 €600，处理周期约 4 个月',
+    difficulty: 4,
+    notes: '注意：挪威官方并没有叫「数字游民签证」的签证，中文圈说的其实是这条自雇居留。要求本科以上学历或 3 年以上职业培训经历，年收入约 €40,500 以上（对标挪威熟练工最低工资）。可携带配偶子女，需要挪威本地居住地址。收入门槛和生活成本都高，是数字游民签里最贵的一档。',
+    official: 'https://www.udi.no/en/want-to-apply/work-immigration/self-employed-person/',
+  },
+  {
+    id: 'hr-nomad',
+    country: '克罗地亚', flag: '🇭🇷',
+    name: '数字游民居留', nameEn: 'Digital Nomad Residence Permit',
+    type: 'nomad',
+    duration: '首次最长 18 个月，累计可达 3 年',
+    pr: '不通往永居（数字游民居留年限不计入入籍）',
+    req: { age: [18, 99], minEng: ENG.daily, fundsUSD: 3600 },
+    quota: '无',
+    cost: '申请费约 €520',
+    difficulty: 2,
+    notes: '申根区里门槛较友好的一条，支持全程在线申请，处理周期约 30–60 天。要求每月约 €3,300 以上的境外收入。可带配偶子女，能证明同居 3 年以上的非婚伴侣也可随行。硬性限制是不能在克罗地亚本地就业，且这段居留不累积入籍年限——纯粹是「合法长住」，不是身份路径。',
+    official: 'https://mup.gov.hr/aliens-281621/stay-and-work/temporary-stay-of-digital-nomads/286833',
+  },
+  {
+    id: 'si-nomad',
+    country: '斯洛文尼亚', flag: '🇸🇮',
+    name: '数字游民签证', nameEn: 'Digital Nomad Permit',
+    type: 'nomad',
+    duration: '1 年，不可续签',
+    pr: '不通往永居',
+    req: { age: [18, 99], minEng: ENG.daily, fundsUSD: 3300 },
+    quota: '无',
+    cost: '签证费约 $100 + 落地登记费约 $130 + 医疗保险（保额需 €3 万以上）',
+    difficulty: 2,
+    notes: '2025 年才推出的新政，申请成本极低。最大的限制是**不可续签**：住满 1 年必须离境，满 6 个月后才能重新申请，所以只适合当作一段体验而非长期落脚。需在使领馆办理，不能落地转。首都卢布尔雅那之外的城市配套对远程工作者不太友好。',
+    official: 'https://www.gov.si/en/topics/digital-nomads/',
+  },
+
+  // ─────────────── 低成本落脚 / 长住 ───────────────
+  {
+    id: 'eu-seasonal',
+    country: '欧盟', flag: '🇪🇺',
+    name: '季节性工作许可', nameEn: 'Seasonal Work Permit',
+    type: 'work',
+    duration: '12 个月内最长工作 9 个月',
+    pr: '本身不通往永居，但可作为转长期工签的跳板',
+    req: { age: [18, 99], minEng: ENG.daily },
+    quota: '各成员国分别设限',
+    cost: '成本很低，雇主通常提供住宿',
+    difficulty: 2,
+    notes: '农业采摘、酒店、旅游旺季用工，不要求学历和高语言水平，是成本最低的合法欧洲工作入口之一。可在欧盟官方就业门户 EURES 上直接搜岗位。**风险集中在雇主端**：克扣工资、超时用工、住宿条件恶劣都是常见投诉，务必要求合同写清工作地点、工时、时薪和住宿费用，并确认雇主已购买当地保险。遇到违规保留证据并向当地劳动监察部门投诉。',
+    official: 'https://eures.europa.eu/index_en',
+  },
+  {
+    id: 'pl-study',
+    country: '波兰', flag: '🇵🇱',
+    name: '低成本留学', nameEn: 'Study in Poland',
+    type: 'study',
+    duration: '学制 3–4 年，毕业后可申请找工作居留',
+    pr: '工作满 5 年左右可申永居',
+    req: { minDeg: DEG.highschool, minEng: ENG.ielts55, fundsUSD: 6000 },
+    quota: '无',
+    cost: '部分英语授课项目学费低至每年 $1,000 以内，波兰语项目可免学费',
+    difficulty: 2,
+    notes: '欧盟境内学费最低的选项之一，雅思 5.0–5.5 就能申。在校期间每周可打工 20 小时，拿的是申根居留，可在其他申根国找工作面试。当地中资企业和欧洲公司分部多，实习就业机会不少。注意各校各专业学费差异很大，务必逐个核实，别信「统一低价」的中介话术。',
+    official: 'https://study.gov.pl/',
+  },
+  {
+    id: 'uy-rentista',
+    country: '乌拉圭', flag: '🇺🇾',
+    name: '自主经济能力居留', nameEn: 'Residencia por medios de vida propios',
+    type: 'nomad',
+    duration: '直接申请居留，需每年在境内住满 183 天',
+    pr: '约 6–12 个月可拿到永居身份证，后续可申请入籍',
+    req: { age: [18, 99], fundsUSD: 1800 },
+    quota: '无',
+    cost: '申请费与证件工本费合计通常在数百美元量级',
+    difficulty: 2,
+    notes: '门槛结构非常罕见：不看学历、不考语言、不要求投资，只看你有没有稳定收入（约每月 $1,500 以上即可，远程工资、房租、分红都算）。拿身份的速度也快。真正的代价是**居住要求**——每年要在境内住满半年，这对还想在国内发展的人是硬约束。适合已经能远程赚钱、且愿意真的搬过去生活的人。',
+    official: 'https://www.gub.uy/ministerio-relaciones-exteriores/',
+  },
+  {
+    id: 'nz-seasonal',
+    country: '新西兰', flag: '🇳🇿',
+    name: '季节性工作签证', nameEn: 'Seasonal Work Visas',
+    type: 'work',
+    duration: '高峰季节类最长 7 个月；全球劳动力类最长 3 年',
+    pr: '本身不通往永居，但可作为转技术工签的跳板',
+    req: { age: [18, 99], jobOffer: true },
+    quota: '按认证雇主的用工需求',
+    cost: '签证费较低',
+    difficulty: 2,
+    notes: '最大亮点是**不要求英语成绩**，也不看学历，主要面向园艺、农业、葡萄园等季节性用工。分两类：高峰季节签证（短期，最长 7 个月）和全球劳动力季节签证（可反复入境，最长 3 年）。必须先拿到认证雇主的 offer。对英语和学历都不占优势、但愿意做体力工作的人，这是少数还开着的门。政策较新，认证雇主名单和开放时间以移民局公告为准。',
+    official: 'https://www.immigration.govt.nz/new-zealand-visas',
+  },
+  {
+    id: 'ec-deposit',
+    country: '厄瓜多尔', flag: '🇪🇨',
+    name: '存款 / 购房居留', nameEn: 'Investor Residency',
+    type: 'invest',
+    duration: '2 年临时居留，之后可转永居',
+    pr: '临时居留满 21 个月可申永居',
+    req: { age: [18, 99], fundsUSD: 47000 },
+    quota: '无',
+    cost: '存款约 $47,000（2025 年标准），或等值房产',
+    difficulty: 2,
+    notes: '南美成本最低的投资居留之一，门槛只有约 4.7 万美元且资金是存款不是消费——存满两年可以取出，当地存款利率还有 7–8%。用美元、生活成本低。缺点是治安波动较大，且这条路对回国发展基本没有加成，适合明确想去南美长住或对成本极度敏感的人。金额标准每年随基本工资调整，申请前务必核实当年数字。',
+    official: 'https://www.cancilleria.gob.ec/',
+  },
+
   // ─────────────── 创业 / 投资 ───────────────
   {
     id: 'ca-suv',
@@ -591,6 +753,20 @@ const PATHWAYS = [
     difficulty: 4,
     notes: '2023 年取消了 £50,000 最低投资额硬性要求，改为由背书机构评估商业计划的创新性、可行性、可扩展性。3 年拿永居是英国最快的路径之一。难点在于通过背书机构的审查。',
     official: 'https://www.gov.uk/innovator-founder-visa',
+  },
+  {
+    id: 'jp-business',
+    country: '日本', flag: '🇯🇵',
+    name: '经营管理签证', nameEn: 'Business Manager Visa',
+    type: 'invest',
+    duration: '1 年起，经营稳定后可续 3–5 年',
+    pr: '连续居住 10 年可申永住；高度人才路线更快',
+    req: { minDeg: DEG.master, otherLang: { code: 'ja', label: '日语 N2' }, fundsUSD: 200000 },
+    quota: '无',
+    cost: '注册资本大幅提高，加上实体办公室、会计与顾问费用，前期投入常在 3,000 万日元以上',
+    difficulty: 4,
+    notes: '⚠️ 门槛已被大幅收紧，网上大量「500 万日元开公司拿身份」的攻略都已作废。改革后对注册资本、经营实体性、申请人学历与日语能力都提出了明确要求（普遍要求硕士以上学历或相关领域专业资历、日语 N2 以上），并设有过渡期安排。这条路现在只适合真的要在日本做生意的人，不再是低成本身份方案。具体要件与过渡期截止日以入管厅最新公告为准。',
+    official: 'https://www.moj.go.jp/isa/applications/status/business-manager.html',
   },
   {
     id: 'ae-golden',

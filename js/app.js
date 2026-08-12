@@ -79,6 +79,8 @@ function buildForm() {
   fill('workExp', OPTIONS.workExp);
   fill('funds', OPTIONS.funds);
 
+  $('#langs').innerHTML = Object.entries(LANGS)
+    .map(([k, v]) => chip('lang', k, v)).join('');
   $('#skills').innerHTML = Object.entries(SKILLS)
     .map(([k, v]) => chip('skill', k, v)).join('');
   $('#goals').innerHTML = Object.entries(GOALS)
@@ -105,6 +107,7 @@ function readProfile() {
     workExp: +$('#workExp').value,
     funds: +$('#funds').value,
     hasOffer: $('#hasOffer').checked,
+    langs: $$('[data-group="lang"]:checked').map((el) => el.value),
     skills: $$('[data-group="skill"]:checked').map((el) => el.value),
     goals: $$('[data-group="goal"]:checked').map((el) => el.value),
   };
@@ -253,7 +256,7 @@ function syncUrl(p) {
   const q = new URLSearchParams({
     a: p.age, d: p.degree, u: p.uniRank, l: p.studyLoc, g: p.yearsSinceGrad ?? 'na',
     e: p.english, fr: p.french, w: p.workExp, f: p.funds, o: p.hasOffer ? 1 : 0,
-    s: p.skills.join('.'), t: p.goals.join('.'),
+    s: p.skills.join('.'), t: p.goals.join('.'), lg: p.langs.join('.'),
     dev: $('#onlyDeveloped').checked ? 1 : 0,
   });
   history.replaceState(null, '', '?' + q.toString());
@@ -273,6 +276,7 @@ function loadFromUrl() {
   };
   check('skill', q.get('s'));
   check('goal', q.get('t'));
+  check('lang', q.get('lg'));
   return true;
 }
 
