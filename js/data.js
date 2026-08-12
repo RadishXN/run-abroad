@@ -81,7 +81,7 @@ const GOALS = {
 const DEVELOPED = new Set([
   '美国', '加拿大', '英国', '爱尔兰', '德国', '法国', '荷兰', '葡萄牙', '西班牙',
   '日本', '韩国', '新加坡', '中国香港', '澳大利亚', '新西兰',
-  '芬兰', '挪威', '斯洛文尼亚', '克罗地亚', '意大利',
+  '芬兰', '挪威', '斯洛文尼亚', '克罗地亚', '意大利', '丹麦',
   // 「欧盟」是跨国路径，按发达经济体处理；波兰、厄瓜多尔按 IMF 口径属新兴经济体
   '欧盟',
 ]);
@@ -274,7 +274,7 @@ const PATHWAYS = [
     quota: '无',
     cost: '约 €225',
     difficulty: 3,
-    notes: '主要面向法国本地院校硕士毕业生；部分情况下认可法国高校在境外的合作学位。法语能力对找工作影响很大。',
+    notes: '主要面向法国本地院校硕士毕业生；部分情况下认可法国高校在境外的合作学位。法语能力对找工作影响很大。另有一类特殊选项：法国的 42 编程学校学费全免、不看学历、只凭入学测试录取，适合想转码又没有文凭的人，但它本身不提供签证，需另行申请学生居留。',
     official: 'https://www.service-public.fr/particuliers/vosdroits/F16922',
   },
 
@@ -508,6 +508,34 @@ const PATHWAYS = [
     official: 'https://www.immd.gov.hk/eng/services/visas/IANG.html',
   },
   {
+    id: 'ie-language',
+    country: '爱尔兰', flag: '🇮🇪',
+    name: '语言学校留学 (Stamp 2)', nameEn: 'English Language Student / Stamp 2',
+    type: 'study',
+    duration: '每期 8 个月课程 + 假期，最多续 3 次（累计约 2 年）',
+    pr: '本身不通往永居，需转工签后累计 5 年',
+    req: { age: [18, 99], minDeg: DEG.highschool, fundsUSD: 9000 },
+    quota: '无',
+    cost: '语言课程学费约 €3,000–5,000/期，另需资金证明与医疗保险',
+    difficulty: 2,
+    notes: '英语国家里门槛最低的合法长期停留方式之一：不要求学历背景和雅思成绩，读语言课程即可拿 Stamp 2 居留，**每周可合法打工 20 小时**（假期 40 小时），基本能覆盖生活开销。目的是先落地、边提升英语边找机会转工签。硬性限制：语言学生身份最多累计约 2 年，到期必须转换身份或离境，不能无限续，所以要提前规划出路。务必选择官方 ILEP 认可名单上的学校，否则不发居留。',
+    official: 'https://www.irishimmigration.ie/coming-to-study-in-ireland/',
+  },
+  {
+    id: 'dk-positivelist',
+    country: '丹麦', flag: '🇩🇰',
+    name: '正面清单工签 / 薪资门槛计划', nameEn: 'Positive List & Pay Limit Scheme',
+    type: 'work',
+    duration: '与合同同长，最长 4 年，可续',
+    pr: '合法居住满 8 年可申永居（满足加分条件可缩短至 4 年）',
+    req: { minDeg: DEG.bachelor, minEng: ENG.ielts65, jobOffer: true },
+    quota: '无',
+    cost: '申请费约 DKK 6,000，雇主常承担',
+    difficulty: 3,
+    notes: '丹麦有两条并行的工签路子：正面清单（列出短缺职业，学历对口即可，薪资门槛较低）和薪资门槛计划（不限职业，但年薪须达到较高标准）。IT、工程、医护是清单常客。英语工作环境普及、工作生活平衡好是最大卖点，缺点是税极高、永居年限长（8 年）。必须先有丹麦雇主 offer，无法凭空申请。',
+    official: 'https://www.nyidanmark.dk/en-GB/You-want-to-apply/Work',
+  },
+  {
     id: 'it-study',
     country: '意大利', flag: '🇮🇹',
     name: '公立大学留学', nameEn: 'Study in Italy',
@@ -576,7 +604,7 @@ const PATHWAYS = [
     quota: '无统一名额，取决于能否拿到企业培训岗位',
     cost: '免学费，且培训期间企业发工资（约每月 €1,000–1,200，逐年递增）',
     difficulty: 3,
-    notes: '欧洲少数认手艺不认文凭的通道，对学历不高的人是真正的入口。初中/高中学历即可申请，护理、餐饮、机电、物流、酒店等行业常年缺人。真正的门槛是德语：几乎所有岗位要求 B1–B2，从零学到 B2 通常要 1–1.5 年。培训期边学边挣，不需要资金证明，这点和留学路线完全不同。结业后是德国认可的职业资格，可直接转工作签证。',
+    notes: '欧洲少数认手艺不认文凭的通道，对学历不高的人是真正的入口。初中/高中学历即可申请，护理、餐饮、机电、物流、酒店等行业常年缺人。真正的门槛是德语：几乎所有岗位要求 B1–B2，从零学到 B2 通常要 1–1.5 年。培训期边学边挣，不需要资金证明，这点和留学路线完全不同。结业后是德国认可的职业资格，可直接转工作签证。具体项目可留意企业自办的学院（如邮轮、酒店集团的双元制班），这类岗位常年招人且包食宿。',
     official: 'https://www.make-it-in-germany.com/en/study-training/training',
   },
   {
