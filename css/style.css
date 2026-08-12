@@ -774,6 +774,112 @@ footer a { color: var(--muted); text-decoration: none; border-bottom: 1px solid 
 footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
 /* ============================================================
+   详情页
+   ============================================================ */
+
+.detail-head {
+  padding: var(--s7) 0 var(--s6);
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--panel), var(--bg));
+}
+.back {
+  display: inline-block;
+  margin-bottom: var(--s5);
+  font-size: 13.5px;
+  color: var(--muted);
+  text-decoration: none;
+}
+.back:hover { color: var(--accent); }
+
+.d-title { display: flex; gap: var(--s5); align-items: center; }
+.d-flag { font-size: 40px; line-height: 1; flex: none; }
+.d-country {
+  margin: 0 0 var(--s1);
+  font-size: 12.5px;
+  letter-spacing: .04em;
+  color: var(--faint);
+}
+.detail-head h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(26px, 4.4vw, 38px);
+  font-weight: 600;
+  letter-spacing: -.015em;
+  line-height: 1.2;
+}
+.d-badges { margin-top: var(--s5); }
+
+.d-block h2 {
+  margin: 0 0 var(--s4);
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+}
+.d-facts { margin-top: var(--s6); margin-bottom: 0; border-bottom: 0; padding-bottom: 0; }
+
+.d-req { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.d-req tr + tr th, .d-req tr + tr td { border-top: 1px solid var(--hair); }
+.d-req th {
+  width: 122px;
+  padding: var(--s3) var(--s4) var(--s3) 0;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--muted);
+  vertical-align: top;
+  white-space: nowrap;
+}
+.d-req td { padding: var(--s3) 0; color: var(--ink-soft); }
+
+.d-steps { margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.d-steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 var(--s5) var(--s8);
+  font-size: 14.5px;
+  line-height: 1.8;
+  color: var(--ink-soft);
+}
+.d-steps li::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  left: 0; top: 0;
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  opacity: .6;
+}
+/* 竖线把步骤串起来，最后一条不画 */
+.d-steps li::after {
+  content: '';
+  position: absolute;
+  left: 9px; top: 24px; bottom: 4px;
+  border-left: 1px solid var(--hair);
+}
+.d-steps li:last-child { padding-bottom: 0; }
+.d-steps li:last-child::after { display: none; }
+
+.d-list { margin: 0; padding-left: var(--s5); font-size: 14.5px; line-height: 1.8; color: var(--ink-soft); }
+.d-list li { margin-bottom: var(--s2); }
+.d-warn { border-left: 2px solid var(--near); }
+.d-warn li::marker { color: var(--near); }
+
+.d-links { margin: 0; padding: 0; list-style: none; }
+.d-links li { padding: var(--s2) 0; }
+.d-links li + li { border-top: 1px solid var(--hair); }
+.d-links a { font-size: 14.5px; color: var(--accent); text-decoration: none; }
+.d-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.d-todo { border-left: 2px solid var(--line); }
+.d-todo h2 { color: var(--muted); }
+
+.card-links { display: flex; align-items: center; gap: var(--s5); flex-wrap: wrap; }
+.official.secondary { color: var(--muted); border-bottom-color: var(--line); }
+.official.secondary:hover { color: var(--ink); }
+
+/* ============================================================
    响应式与无障碍
    ============================================================ */
 

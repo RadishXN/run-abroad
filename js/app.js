@@ -462,7 +462,10 @@ function card(r, i = 0) {
           <ul>${gaps.map((g) => `<li class="${g.kind}">${fmt(g.text)}</li>`).join('')}</ul>
         </div>` : '<div class="gaps none">✓ 所列门槛均已满足</div>'}
 
-      <a class="official" href="${p.official}" target="_blank" rel="noopener noreferrer">查看官方页面 →</a>
+      <div class="card-links">
+        <a class="official" href="pathway.html?id=${p.id}">查看详细条件与流程 →</a>
+        <a class="official secondary" href="${p.official}" target="_blank" rel="noopener noreferrer">官网</a>
+      </div>
     </article>`;
 }
 
