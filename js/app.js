@@ -211,6 +211,16 @@ function renderGroups(bucket) {
   }).join('');
 }
 
+/**
+ * 数据里的 notes 用 **…** 标注重点，需要转成 <strong>。
+ * 先转义再替换，保证即便以后数据来自外部贡献也不会注入 HTML。
+ */
+function fmt(s) {
+  return String(s ?? '')
+    .replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+}
+
 function card(r, i = 0) {
   const p = r.pathway;
   const gaps = [...r.hardGaps, ...r.softGaps];
@@ -232,18 +242,18 @@ function card(r, i = 0) {
       </div>
 
       <dl class="facts">
-        <div><dt>时长</dt><dd>${p.duration}</dd></div>
-        <div><dt>永居路径</dt><dd>${p.pr}</dd></div>
-        <div><dt>费用</dt><dd>${p.cost}</dd></div>
-        <div><dt>名额</dt><dd>${p.quota}</dd></div>
+        <div><dt>时长</dt><dd>${fmt(p.duration)}</dd></div>
+        <div><dt>永居路径</dt><dd>${fmt(p.pr)}</dd></div>
+        <div><dt>费用</dt><dd>${fmt(p.cost)}</dd></div>
+        <div><dt>名额</dt><dd>${fmt(p.quota)}</dd></div>
       </dl>
 
-      <p class="notes">${p.notes}</p>
+      <p class="notes">${fmt(p.notes)}</p>
 
       ${gaps.length ? `
         <div class="gaps">
           <b>你还差：</b>
-          <ul>${gaps.map((g) => `<li class="${g.kind}">${g.text}</li>`).join('')}</ul>
+          <ul>${gaps.map((g) => `<li class="${g.kind}">${fmt(g.text)}</li>`).join('')}</ul>
         </div>` : '<div class="gaps none">✓ 所列门槛均已满足</div>'}
 
       <a class="official" href="${p.official}" target="_blank" rel="noopener noreferrer">查看官方页面 →</a>
