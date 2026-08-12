@@ -4,11 +4,11 @@
 
 **填 10 项基本信息，看清自己能走哪些出国路径 —— 以及还差什么。**
 
-收录 59 条签证与移民路径 · 纯静态网页 · 零依赖 · 零追踪 · 所有计算在你的浏览器里完成
+收录 71 条签证与移民路径 · 纯静态网页 · 零依赖 · 零追踪 · 所有计算在你的浏览器里完成
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](#-项目结构)
-[![Pathways](https://img.shields.io/badge/收录路径-59-orange.svg)](js/data.js)
+[![Pathways](https://img.shields.io/badge/收录路径-71-orange.svg)](js/data.js)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-purple.svg)](CONTRIBUTING.md)
 
 **[👉 在线体验](https://radishxn.github.io/run-abroad/)** · [快速开始](#-快速开始) · [贡献数据](CONTRIBUTING.md) · [免责声明](#️-免责声明)
@@ -27,7 +27,7 @@
 
 于是你在几十个标签页之间反复比对，一周后仍然不知道下周该做什么。
 
-这个项目就是来解决这一步的。它不是又一份签证清单，而是一个**决策工具**：把你的条件和 59 条路径的门槛逐项比对，输出一份排过序的、标注了具体缺口的结果。
+这个项目就是来解决这一步的。它不是又一份签证清单，而是一个**决策工具**：把你的条件和 71 条路径的门槛逐项比对，输出一份排过序的、标注了具体缺口的结果。
 
 ---
 
@@ -107,7 +107,7 @@
 <table>
 <tr><th>类型</th><th>覆盖</th></tr>
 <tr><td>🎒 <b>打工度假</b></td><td>新西兰 WHV · 澳大利亚 462 · 新加坡 WHP</td></tr>
-<tr><td>🎓 <b>毕业生找工作签</b></td><td>英国 HPI · 日本 J-Find · 荷兰 Zoekjaar · 德国机会卡 · 韩国 D-10 · 法国 RECE</td></tr>
+<tr><td>🎓 <b>毕业生找工作签</b></td><td>英国 HPI · 日本 J-Find / 特定活动 · 荷兰 Zoekjaar · 德国机会卡 / 18 个月找工作 · 芬兰 2 年求职 · 瑞典 · 丹麦创业卡 · 比利时 · 奥地利 · 意大利待业 · 西班牙 · 挪威 · 韩国 D-10 · 法国 RECE</td></tr>
 <tr><td>⭐ <b>人才引进</b></td><td>香港高才通 · 香港优才 · 英国全球人才 · 新加坡 ONE Pass · 美国 O-1 / EB-2 NIW</td></tr>
 <tr><td>🔧 <b>技术移民</b></td><td>加拿大 Express Entry · <b>加拿大法语类别定向邀请</b> · 澳大利亚 189/190/491 · 新西兰 SMC · 日本高度人才</td></tr>
 <tr><td>💼 <b>工作签证</b></td><td>荷兰高技术移民 · 英国 Skilled Worker · 新加坡 EP · 爱尔兰关键技能 · 丹麦正面清单 · 美国 H-1B</td></tr>
@@ -119,7 +119,7 @@
 <tr><td>🛬 <b>低成本落脚</b></td><td>格鲁吉亚免签 1 年 · 乌拉圭自主经济能力居留 · 厄瓜多尔存款居留 · 波兰低成本留学</td></tr>
 </table>
 
-覆盖 **29 个国家 / 地区**，每条路径都附有政府官网链接。
+覆盖 **32 个国家 / 地区**，每条路径都附有政府官网链接。
 
 ---
 
