@@ -119,7 +119,14 @@ const REGION_OF = {
 const EXCLUDES = {
   noStudy: {
     label: '不想再读书',
-    test: (p) => ['study', 'vocational'].includes(p.type),
+    hint: '连同「必须先在当地读完学位」的找工作签一起筛掉',
+    // 很多「毕业生找工作签」类型上不叫留学，但前提是先在当地念完书。
+    // 反过来，已经持有当地学位的人不需要再读，那些路径要保留。
+    test: (p, profile) => {
+      const needsLocal = !!p.req?.studyIn;
+      if (needsLocal) return p.req.studyIn !== profile?.studyLoc;
+      return ['study', 'vocational'].includes(p.type);
+    },
   },
   noMoney: {
     label: '不想花大钱',
@@ -128,8 +135,14 @@ const EXCLUDES = {
   },
   noLang: {
     label: '不想考语言',
-    hint: '筛掉需要雅思 5.5 以上或小语种的',
-    test: (p) => (p.req?.minEng ?? 0) >= ENG.ielts55 || !!p.req?.minFrench || !!p.req?.otherLang,
+    hint: '筛掉需要你再去考、再去学的语言门槛',
+    // 只筛掉「比你现有水平更高」的要求 —— 已经达标的不算负担
+    test: (p, profile) => {
+      const needEng = (p.req?.minEng ?? 0) > (profile?.english ?? 0);
+      const needFra = (p.req?.minFrench ?? 0) > (profile?.french ?? 0);
+      const needOther = !!p.req?.otherLang && !(profile?.langs || []).includes(p.req.otherLang.code);
+      return needEng || needFra || needOther;
+    },
   },
   noOffer: {
     label: '拿不到海外 offer',

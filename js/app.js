@@ -282,12 +282,12 @@ function activeFilters() {
   };
 }
 
-/** 一条路径是否应当被保留。 */
-function keeps(p, f) {
+/** 一条路径是否应当被保留。部分排除条件要看用户档案才能判准。 */
+function keeps(p, f, profile) {
   if (f.developed && !DEVELOPED.has(p.country)) return false;
   if (f.regions.size && !f.regions.has(REGION_OF[p.country])) return false;
   for (const key of f.excludes) {
-    if (EXCLUDES[key]?.test(p)) return false;
+    if (EXCLUDES[key]?.test(p, profile)) return false;
   }
   return true;
 }
@@ -297,7 +297,7 @@ function applyFilters(bucket) {
   if (!f.developed && !f.regions.size && !f.excludes.length) return bucket;
   const out = {};
   for (const k of Object.keys(bucket)) {
-    out[k] = bucket[k].filter((r) => keeps(r.pathway, f));
+    out[k] = bucket[k].filter((r) => keeps(r.pathway, f, lastProfile));
   }
   return out;
 }
@@ -310,7 +310,7 @@ function renderFilterNote() {
   const note = $('#filterNote');
   const f = activeFilters();
   const all = Object.values(lastBucket).flat();
-  const hidden = all.filter((r) => !keeps(r.pathway, f));
+  const hidden = all.filter((r) => !keeps(r.pathway, f, lastProfile));
 
   if (!hidden.length) { note.textContent = ''; return; }
 
@@ -325,7 +325,7 @@ function renderFilterNote() {
     if (n) reasons.push(`地区不符 ${n} 条`);
   }
   for (const key of f.excludes) {
-    const n = all.filter((r) => EXCLUDES[key].test(r.pathway)).length;
+    const n = all.filter((r) => EXCLUDES[key].test(r.pathway, lastProfile)).length;
     if (n) reasons.push(`${EXCLUDES[key].label} ${n} 条`);
   }
   note.textContent = `已隐藏 ${hidden.length} 条：${reasons.join(' · ')}`;
