@@ -30,7 +30,7 @@ function checkPathway(profile, p) {
   if (req.minDeg != null && profile.degree < req.minDeg) {
     gaps.push({
       kind: SOFT, field: 'degree',
-      text: `需要 ${DEG_LABEL[req.minDeg]} 及以上，你当前是 ${DEG_LABEL[profile.degree]}`,
+      text: `需要${DEG_LABEL[req.minDeg]}及以上学历，你目前是${DEG_LABEL[profile.degree]}`,
     });
   }
 
