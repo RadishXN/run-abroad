@@ -203,16 +203,17 @@ function renderGroups(bucket) {
           <h2>${g.title} <span class="count">${list.length}</span></h2>
           <p>${g.hint}</p>
         </header>
-        <div class="cards">${list.map(card).join('')}</div>
+        <div class="cards">${list.map((r, i) => card(r, i)).join('')}</div>
       </section>`;
   }).join('');
 }
 
-function card(r) {
+function card(r, i = 0) {
   const p = r.pathway;
   const gaps = [...r.hardGaps, ...r.softGaps];
+  // --i 驱动 CSS 里的入场动画延迟；只对前若干张有意义，避免长列表末尾等太久
   return `
-    <article class="card">
+    <article class="card" style="--i:${Math.min(i, 12)}">
       <div class="card-top">
         <div class="title">
           <span class="flag">${p.flag}</span>
