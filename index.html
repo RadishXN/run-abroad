@@ -101,13 +101,25 @@
   <div id="results" hidden>
     <div id="summary" class="panel summary"></div>
 
-    <div class="filterbar">
-      <label class="switch">
-        <input type="checkbox" id="onlyDeveloped">
-        <span>只看发达国家 / 地区</span>
-      </label>
-      <span id="filterNote" class="filter-note"></span>
-      <button id="copyLink" class="ghost">复制结果链接</button>
+    <div class="panel filters">
+      <div class="filter-row">
+        <span class="filter-label">想去哪</span>
+        <div id="regions" class="chips"></div>
+      </div>
+
+      <div class="filter-row">
+        <span class="filter-label">我不想…</span>
+        <div id="excludes" class="chips"></div>
+      </div>
+
+      <div class="filterbar">
+        <label class="switch">
+          <input type="checkbox" id="onlyDeveloped">
+          <span>只看发达国家 / 地区</span>
+        </label>
+        <span id="filterNote" class="filter-note"></span>
+        <button id="copyLink" class="ghost">复制结果链接</button>
+      </div>
     </div>
 
     <div id="groups"></div>

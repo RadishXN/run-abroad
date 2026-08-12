@@ -90,6 +90,57 @@ const DEVELOPED = new Set([
   '欧盟',
 ]);
 
+/** 地区归属。格鲁吉亚地跨欧亚，按润学语境归入「中东 · 其他」。 */
+const REGION_LABEL = {
+  asia: '亚洲',
+  eu: '欧洲',
+  na: '北美',
+  oc: '大洋洲',
+  latam: '拉美',
+  other: '中东 · 其他',
+};
+
+const REGION_OF = {
+  日本: 'asia', 中国香港: 'asia', 韩国: 'asia', 新加坡: 'asia', 泰国: 'asia', 马来西亚: 'asia',
+  英国: 'eu', 爱尔兰: 'eu', 荷兰: 'eu', 德国: 'eu', 法国: 'eu', 葡萄牙: 'eu', 西班牙: 'eu',
+  意大利: 'eu', 波兰: 'eu', 芬兰: 'eu', 瑞典: 'eu', 挪威: 'eu', 丹麦: 'eu',
+  比利时: 'eu', 奥地利: 'eu', 斯洛文尼亚: 'eu', 克罗地亚: 'eu', 欧盟: 'eu',
+  美国: 'na', 加拿大: 'na',
+  澳大利亚: 'oc', 新西兰: 'oc',
+  厄瓜多尔: 'latam', 乌拉圭: 'latam',
+  阿联酋: 'other', 格鲁吉亚: 'other',
+};
+
+/**
+ * 排除条件（「我不想…」）。
+ * test 返回 true = 这条路径命中了该排除项，勾选后会被筛掉。
+ * 只用已有字段判断，不额外标注数据，避免两处数据不同步。
+ */
+const EXCLUDES = {
+  noStudy: {
+    label: '不想再读书',
+    test: (p) => ['study', 'vocational'].includes(p.type),
+  },
+  noMoney: {
+    label: '不想花大钱',
+    hint: '筛掉资金门槛超过 $20,000 的',
+    test: (p) => (p.req?.fundsUSD || 0) > 20000,
+  },
+  noLang: {
+    label: '不想考语言',
+    hint: '筛掉需要雅思 5.5 以上或小语种的',
+    test: (p) => (p.req?.minEng ?? 0) >= ENG.ielts55 || !!p.req?.minFrench || !!p.req?.otherLang,
+  },
+  noOffer: {
+    label: '拿不到海外 offer',
+    test: (p) => !!p.req?.jobOffer,
+  },
+  noInvest: {
+    label: '不想投资创业',
+    test: (p) => p.type === 'invest',
+  },
+};
+
 const TYPE_LABEL = {
   workholiday: '打工度假',
   jobseek: '毕业生找工作签',
@@ -1113,6 +1164,7 @@ function validatePathways() {
       if (!p[f]) problems.push(`${p.id} 缺少字段 ${f}`);
     }
     if (!TYPE_LABEL[p.type]) problems.push(`${p.id} 的 type "${p.type}" 未定义`);
+    if (!REGION_OF[p.country]) problems.push(`${p.id} 的国家「${p.country}」未归入地区，请补 REGION_OF`);
   }
   return problems;
 }

@@ -87,6 +87,12 @@ function buildForm() {
     .map(([k, v]) => chip('goal', k, v)).join('');
 
   $$('select').forEach(enhanceSelect);
+
+  // 筛选区：地区多选 + 排除条件多选。不选地区 = 不限地区。
+  $('#regions').innerHTML = Object.entries(REGION_LABEL)
+    .map(([k, v]) => chip('region', k, v)).join('');
+  $('#excludes').innerHTML = Object.entries(EXCLUDES)
+    .map(([k, v]) => chip('exclude', k, v.label, v.hint)).join('');
 }
 
 /* ── 自绘下拉框 ─────────────────────────────
@@ -213,8 +219,8 @@ document.addEventListener('click', (e) => {
   }
 });
 
-function chip(group, value, label) {
-  return `<label class="chip">
+function chip(group, value, label, hint) {
+  return `<label class="chip"${hint ? ` title="${hint}"` : ''}>
     <input type="checkbox" data-group="${group}" value="${value}">
     <span>${label}</span>
   </label>`;
@@ -267,11 +273,31 @@ function render() {
   renderFilterNote(bucket);
 }
 
+/** 当前生效的筛选条件。三者是「与」的关系。 */
+function activeFilters() {
+  return {
+    developed: $('#onlyDeveloped').checked,
+    regions: new Set($$('[data-group="region"]:checked').map((el) => el.value)),
+    excludes: $$('[data-group="exclude"]:checked').map((el) => el.value),
+  };
+}
+
+/** 一条路径是否应当被保留。 */
+function keeps(p, f) {
+  if (f.developed && !DEVELOPED.has(p.country)) return false;
+  if (f.regions.size && !f.regions.has(REGION_OF[p.country])) return false;
+  for (const key of f.excludes) {
+    if (EXCLUDES[key]?.test(p)) return false;
+  }
+  return true;
+}
+
 function applyFilters(bucket) {
-  if (!$('#onlyDeveloped').checked) return bucket;
+  const f = activeFilters();
+  if (!f.developed && !f.regions.size && !f.excludes.length) return bucket;
   const out = {};
   for (const k of Object.keys(bucket)) {
-    out[k] = bucket[k].filter((r) => DEVELOPED.has(r.pathway.country));
+    out[k] = bucket[k].filter((r) => keeps(r.pathway, f));
   }
   return out;
 }
@@ -280,16 +306,29 @@ function applyFilters(bucket) {
  * 明确告诉用户筛掉了什么。
  * 隐式过滤掉一批国家而不作说明，会让人误以为那些路径不存在。
  */
-function renderFilterNote(shown) {
+function renderFilterNote() {
   const note = $('#filterNote');
-  if (!$('#onlyDeveloped').checked) { note.textContent = ''; return; }
-
+  const f = activeFilters();
   const all = Object.values(lastBucket).flat();
-  const hidden = all.filter((r) => !DEVELOPED.has(r.pathway.country));
+  const hidden = all.filter((r) => !keeps(r.pathway, f));
+
   if (!hidden.length) { note.textContent = ''; return; }
 
-  const countries = [...new Set(hidden.map((r) => r.pathway.country))];
-  note.textContent = `已隐藏 ${hidden.length} 条路径（${countries.join('、')}）`;
+  // 逐条说明是被哪个条件筛掉的，而不是只给一个总数
+  const reasons = [];
+  if (f.developed) {
+    const n = all.filter((r) => !DEVELOPED.has(r.pathway.country)).length;
+    if (n) reasons.push(`非发达地区 ${n} 条`);
+  }
+  if (f.regions.size) {
+    const n = all.filter((r) => !f.regions.has(REGION_OF[r.pathway.country])).length;
+    if (n) reasons.push(`地区不符 ${n} 条`);
+  }
+  for (const key of f.excludes) {
+    const n = all.filter((r) => EXCLUDES[key].test(r.pathway)).length;
+    if (n) reasons.push(`${EXCLUDES[key].label} ${n} 条`);
+  }
+  note.textContent = `已隐藏 ${hidden.length} 条：${reasons.join(' · ')}`;
 }
 
 function renderSummary(profile, bucket) {
@@ -435,6 +474,8 @@ function syncUrl(p) {
     e: p.english, fr: p.french, w: p.workExp, f: p.funds, o: p.hasOffer ? 1 : 0,
     s: p.skills.join('.'), t: p.goals.join('.'), lg: p.langs.join('.'),
     dev: $('#onlyDeveloped').checked ? 1 : 0,
+    rg: $$('[data-group="region"]:checked').map((el) => el.value).join('.'),
+    ex: $$('[data-group="exclude"]:checked').map((el) => el.value).join('.'),
   });
   history.replaceState(null, '', '?' + q.toString());
 }
@@ -454,6 +495,8 @@ function loadFromUrl() {
   check('skill', q.get('s'));
   check('goal', q.get('t'));
   check('lang', q.get('lg'));
+  check('region', q.get('rg'));
+  check('exclude', q.get('ex'));
   $$('select').forEach(syncSelectUI);   // 回填后让自绘按钮显示正确的选项
   return true;
 }
@@ -473,10 +516,14 @@ document.addEventListener('DOMContentLoaded', () => {
     $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  $('#onlyDeveloped').addEventListener('change', () => {
+  // 筛选条件变化只需重渲染，不必重跑匹配
+  document.addEventListener('change', (e) => {
     if (!lastBucket) return;
-    render();
-    syncUrl(lastProfile);
+    const g = e.target.dataset?.group;
+    if (e.target.id === 'onlyDeveloped' || g === 'region' || g === 'exclude') {
+      render();
+      syncUrl(lastProfile);
+    }
   });
 
   $('#copyLink').addEventListener('click', async () => {

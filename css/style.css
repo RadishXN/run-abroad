@@ -481,12 +481,39 @@ button { font: inherit; cursor: pointer; transition: all .16s; }
    筛选栏
    ============================================================ */
 
+.filters { padding: var(--s6) var(--s7); }
+
+.filter-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s4);
+  flex-wrap: wrap;
+  padding-bottom: var(--s4);
+  margin-bottom: var(--s4);
+  border-bottom: 1px solid var(--hair);
+}
+.filter-label {
+  flex: none;
+  width: 62px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+.filter-row .chips { flex: 1; min-width: 220px; margin-top: 0; }
+.filter-row .chip span { padding: 6px 13px; font-size: 13px; }
+
+/* 「我不想…」是排除项，选中时用警示色，和地区的正向选择区分开 */
+#excludes .chip input:checked + span {
+  background: var(--far);
+  border-color: var(--far);
+}
+
 .filterbar {
   display: flex;
   align-items: center;
   gap: var(--s3);
   flex-wrap: wrap;
-  margin-bottom: var(--s7);
 }
 .switch {
   display: inline-flex;
