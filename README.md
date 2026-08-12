@@ -11,7 +11,7 @@
 [![Pathways](https://img.shields.io/badge/收录路径-35-orange.svg)](js/data.js)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-purple.svg)](CONTRIBUTING.md)
 
-[在线体验](#) · [快速开始](#-快速开始) · [贡献数据](CONTRIBUTING.md) · [免责声明](#️-免责声明)
+**[👉 在线体验](https://radishxn.github.io/run-abroad/)** · [快速开始](#-快速开始) · [贡献数据](CONTRIBUTING.md) · [免责声明](#️-免责声明)
 
 </div>
 
@@ -192,7 +192,7 @@
 没有构建步骤，没有 npm，没有任何第三方依赖。克隆下来直接打开：
 
 ```bash
-git clone https://github.com/<your-username>/run-abroad.git
+git clone https://github.com/RadishXN/run-abroad.git
 cd run-abroad
 
 open index.html              # macOS 直接打开
