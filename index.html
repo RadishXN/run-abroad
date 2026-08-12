@@ -13,7 +13,7 @@
   <div class="wrap">
     <h1>我能怎么润？</h1>
     <p class="lead">
-      填 9 项基本信息，从 <b id="total">0</b> 条签证 / 移民路径里筛出适合你的，
+      填 10 项基本信息，从 <b id="total">0</b> 条签证 / 移民路径里筛出适合你的，
       并告诉你<strong>还差什么</strong>。
     </p>
     <p class="privacy">全部计算在你的浏览器里完成 · 不上传、不存储、无后端</p>
@@ -26,45 +26,51 @@
     <div class="grid">
       <label class="field">
         <span>年龄</span>
-        <input type="number" id="age" min="15" max="80" value="26" required>
+        <input type="number" id="age" min="15" max="80" placeholder="例如 26" required>
       </label>
 
       <label class="field">
         <span>最高学历</span>
-        <select id="degree"></select>
+        <select id="degree" required></select>
       </label>
 
       <label class="field">
         <span>院校层次</span>
-        <select id="uniRank"></select>
+        <select id="uniRank" required></select>
         <small>很多签证只认世界排名前 50 / 100 / 200 的学校</small>
       </label>
 
       <label class="field">
         <span>学位在哪读的</span>
-        <select id="studyLoc"></select>
+        <select id="studyLoc" required></select>
         <small>香港 IANG、英国 PSW 等只认当地院校的学位</small>
       </label>
 
       <label class="field">
         <span>毕业多久了</span>
-        <select id="gradYears"></select>
+        <select id="gradYears" required></select>
         <small>找工作签普遍有毕业 3–5 年的窗口期</small>
       </label>
 
       <label class="field">
         <span>英语水平</span>
-        <select id="english"></select>
+        <select id="english" required></select>
+      </label>
+
+      <label class="field">
+        <span>法语水平</span>
+        <select id="french" required></select>
+        <small>不会也没关系。加拿大法语通道分数线远低于常规轮次</small>
       </label>
 
       <label class="field">
         <span>全职工作经验</span>
-        <select id="workExp"></select>
+        <select id="workExp" required></select>
       </label>
 
       <label class="field">
         <span>可动用资金</span>
-        <select id="funds"></select>
+        <select id="funds" required></select>
         <small>用于资金证明 / 封锁账户 / 申请费</small>
       </label>
 

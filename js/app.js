@@ -22,7 +22,7 @@ const OPTIONS = {
   ],
   studyLoc: Object.entries(STUDY_LOC).map(([v, t]) => ({ v, t })),
   gradYears: [
-    { v: '', t: '还在读 / 尚未毕业' },
+    { v: 'na', t: '还在读 / 尚未毕业' },
     { v: 0, t: '今年刚毕业' },
     { v: 2, t: '毕业 1–3 年' },
     { v: 4, t: '毕业 3–5 年' },
@@ -35,6 +35,12 @@ const OPTIONS = {
     { v: ENG.ielts55, t: '雅思 5.5 / 六级水平' },
     { v: ENG.ielts65, t: '雅思 6.5 / 能用英语工作' },
     { v: ENG.fluent, t: '接近母语' },
+  ],
+  french: [
+    { v: FRA.none, t: '不会法语' },
+    { v: FRA.basic, t: '入门（A1–A2）' },
+    { v: FRA.mid, t: '中级（NCLC 5–6）' },
+    { v: FRA.nclc7, t: 'NCLC 7+ / TEF B2 以上' },
   ],
   workExp: [
     { v: 0, t: '应届 / 无全职经验' },
@@ -56,18 +62,22 @@ const OPTIONS = {
 /* ── 构建表单 ───────────────────────────── */
 
 function buildForm() {
-  const fill = (id, opts, def) => {
+  // 所有下拉框默认停在占位项，不预设任何答案 ——
+  // 预填的默认值会被当成「系统的建议」，反而干扰用户如实填写。
+  const fill = (id, opts, placeholder = '请选择') => {
     const el = $('#' + id);
-    el.innerHTML = opts.map((o) => `<option value="${o.v}">${o.t}</option>`).join('');
-    if (def != null) el.value = String(def);
+    el.innerHTML =
+      `<option value="" disabled selected>${placeholder}</option>` +
+      opts.map((o) => `<option value="${o.v}">${o.t}</option>`).join('');
   };
-  fill('degree', OPTIONS.degree, DEG.bachelor);
-  fill('uniRank', OPTIONS.uniRank, 9999);
-  fill('studyLoc', OPTIONS.studyLoc, 'cn');
-  fill('gradYears', OPTIONS.gradYears, 2);
-  fill('english', OPTIONS.english, ENG.ielts55);
-  fill('workExp', OPTIONS.workExp, 1);
-  fill('funds', OPTIONS.funds, 10000);
+  fill('degree', OPTIONS.degree);
+  fill('uniRank', OPTIONS.uniRank);
+  fill('studyLoc', OPTIONS.studyLoc);
+  fill('gradYears', OPTIONS.gradYears);
+  fill('english', OPTIONS.english);
+  fill('french', OPTIONS.french);
+  fill('workExp', OPTIONS.workExp);
+  fill('funds', OPTIONS.funds);
 
   $('#skills').innerHTML = Object.entries(SKILLS)
     .map(([k, v]) => chip('skill', k, v)).join('');
@@ -89,8 +99,9 @@ function readProfile() {
     degree: +$('#degree').value,
     uniRank: +$('#uniRank').value,
     studyLoc: $('#studyLoc').value,
-    yearsSinceGrad: grad === '' ? null : +grad,
+    yearsSinceGrad: grad === 'na' ? null : +grad,
     english: +$('#english').value,
+    french: +$('#french').value,
     workExp: +$('#workExp').value,
     funds: +$('#funds').value,
     hasOffer: $('#hasOffer').checked,
@@ -239,8 +250,8 @@ function card(r) {
 
 function syncUrl(p) {
   const q = new URLSearchParams({
-    a: p.age, d: p.degree, u: p.uniRank, l: p.studyLoc, g: p.yearsSinceGrad ?? '',
-    e: p.english, w: p.workExp, f: p.funds, o: p.hasOffer ? 1 : 0,
+    a: p.age, d: p.degree, u: p.uniRank, l: p.studyLoc, g: p.yearsSinceGrad ?? 'na',
+    e: p.english, fr: p.french, w: p.workExp, f: p.funds, o: p.hasOffer ? 1 : 0,
     s: p.skills.join('.'), t: p.goals.join('.'),
     dev: $('#onlyDeveloped').checked ? 1 : 0,
   });
@@ -252,7 +263,7 @@ function loadFromUrl() {
   if (!q.has('a')) return false;
   const set = (id, key) => { if (q.has(key)) $('#' + id).value = q.get(key); };
   set('age', 'a'); set('degree', 'd'); set('uniRank', 'u'); set('studyLoc', 'l'); set('gradYears', 'g');
-  set('english', 'e'); set('workExp', 'w'); set('funds', 'f');
+  set('english', 'e'); set('french', 'fr'); set('workExp', 'w'); set('funds', 'f');
   $('#hasOffer').checked = q.get('o') === '1';
   $('#onlyDeveloped').checked = q.get('dev') === '1';
   const check = (group, csv) => {

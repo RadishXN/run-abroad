@@ -26,6 +26,7 @@
     uniRank: 100,                  // 院校世界排名要求（50/100/200/500）
     gradWithin: 5,                 // 毕业几年内
     minEng: ENG.ielts55,           // none/daily/ielts55/ielts65/fluent
+    minFrench: FRA.nclc7,          // none/basic/mid/nclc7（法语单独建模）
     workExp: 3,                    // 最低工作年限
     jobOffer: true,                // 是否需要当地 offer
     fundsUSD: 3000,                // 资金证明（美元）

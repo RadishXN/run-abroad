@@ -16,6 +16,13 @@ const ENG = { none: 0, daily: 1, ielts55: 2, ielts65: 3, fluent: 4 };
 const DEG_LABEL = ['无学历', '高中', '大专', '本科', '硕士', '博士'];
 const ENG_LABEL = ['几乎不会', '日常交流', '雅思 5.5 / CET-6 水平', '雅思 6.5 / 工作可用', '接近母语'];
 
+/**
+ * 法语水平。单独建模是因为它能打开一批英语路径打不开的门 ——
+ * 尤其是加拿大 Express Entry 的法语类别定向邀请。
+ */
+const FRA = { none: 0, basic: 1, mid: 2, nclc7: 3 };
+const FRA_LABEL = ['不会法语', '入门 (A1–A2)', '中级 (NCLC 5–6)', 'NCLC 7+ / TEF B2 以上'];
+
 /** 学位就读地 —— 部分路径要求学位必须在当地取得（如香港 IANG、英国 PSW）。 */
 const STUDY_LOC = {
   cn: '中国大陆',
@@ -268,6 +275,20 @@ const PATHWAYS = [
     difficulty: 4,
     notes: '一步到位拿枫叶卡，含金量高但竞争激烈。CRS 打分：年龄（29 岁前满分）、学历、雅思（CLB9 分数飞涨）、工作经验、法语加分（近年法语类别捞人分数极低，是重要捷径）。境内工作经验（CEC）比境外申请优势大得多。',
     official: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry.html',
+  },
+  {
+    id: 'ca-ee-french',
+    country: '加拿大', flag: '🇨🇦',
+    name: 'Express Entry 法语类别定向邀请', nameEn: 'Express Entry — French-language proficiency category',
+    type: 'skilled',
+    duration: '直接给永久居民身份',
+    pr: '本身就是永居，住满约 3 年可入籍',
+    req: { age: [18, 45], minDeg: DEG.bachelor, minFrench: FRA.nclc7, workExp: 1 },
+    quota: '法语类别是近年定向邀请中占比最大的一类',
+    cost: '与常规 EE 相同，另加 TEF/TCF 考试费约 CAD$400',
+    difficulty: 3,
+    notes: '被严重低估的一条路。法语四项都达到 NCLC 7（约 TEF B2）就能进入法语定向池，而法语类别的分数线常年显著低于常规轮次——同样的背景，法语能让你不必去拼那些几乎摸不到的高分。英语不是硬门槛（法语即可满足官方语言要求），有英语成绩则额外加分。代价是从零学到 B2 通常要 1–2 年。注意这条路不要求你去魁北克，魁省有自己独立的移民体系。',
+    official: 'https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/submit-profile/rounds-invitations/category-based-selection.html',
   },
   {
     id: 'au-skilled',

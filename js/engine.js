@@ -62,6 +62,14 @@ function checkPathway(profile, p) {
     });
   }
 
+  // 法语
+  if (req.minFrench != null && profile.french < req.minFrench) {
+    gaps.push({
+      kind: SOFT, field: 'french',
+      text: `法语需达到「${FRA_LABEL[req.minFrench]}」，你当前是「${FRA_LABEL[profile.french]}」`,
+    });
+  }
+
   // 工作经验
   if (req.workExp != null && profile.workExp < req.workExp) {
     gaps.push({
@@ -185,6 +193,7 @@ function bottlenecks(bucket) {
     skills: '转向紧缺职业方向',
     gradWithin: '尽快在毕业窗口期内行动',
     studyIn: '考虑先去目标国家读一个学位',
+    french: '学法语到 NCLC 7（加拿大法语通道分数线远低于常规轮次）',
   };
   return Object.entries(count)
     .sort((a, b) => b[1] - a[1])
