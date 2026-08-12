@@ -135,6 +135,17 @@ function checkPathway(profile, p) {
 }
 
 /**
+ * 这条路径是否真的通往永居。
+ * 必须先排除否定表述 —— 「不通往永居」里同样含「永居」二字，
+ * 直接做关键词匹配会把打工度假、数字游民签全部误判成永居路径。
+ */
+function leadsToPR(p) {
+  const pr = p.pr || '';
+  if (/不通往|不直接通往|不计入|不挂钩|属于短期/.test(pr)) return false;
+  return /永居|绿卡|永久居民|长居|入籍|^是$/.test(pr);
+}
+
+/**
  * 打分只用于排序，不代表「成功率」。
  * 基准分按 status 给，再根据用户目标做偏好加权。
  */
@@ -148,10 +159,8 @@ function scoreOf(profile, p, status, softGaps, skillMatch) {
   if (skillMatch) score += 10;
 
   const goals = profile.goals || [];
-  const isPR = /永居|绿卡|永久居民|是$/.test(p.pr || '');
 
-  if (goals.includes('pr') && isPR) score += 14;
-  if (goals.includes('pr') && /不通往永居|不直接通往/.test(p.pr || '')) score -= 12;
+  if (goals.includes('pr')) score += leadsToPR(p) ? 14 : -12;
   if (goals.includes('fast') && ['workholiday', 'jobseek', 'nomad'].includes(p.type)) score += 12;
   if (goals.includes('fast') && p.type === 'skilled') score -= 6;
 

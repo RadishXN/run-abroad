@@ -297,7 +297,7 @@ function renderSummary(profile, bucket) {
   const n = (k) => bucket[k].length;
 
   const countries = new Set(bucket.eligible.map((r) => r.pathway.country));
-  const prCount = bucket.eligible.filter((r) => /永居|绿卡|永久居民|^是$/.test(r.pathway.pr || '')).length;
+  const prCount = bucket.eligible.filter((r) => leadsToPR(r.pathway)).length;
 
   $('#summary').innerHTML = `
     <div class="stats">
@@ -347,6 +347,46 @@ function fmt(s) {
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 }
 
+/* ── 国旗降级 ─────────────────────────────
+   Windows 没有内置旗帜字体，🇯🇵 这类「区域指示符对」会退化成两个
+   字母，排版很难看。这里画一个已知有彩色的旗帜到 canvas 上，
+   若像素全是灰阶就说明系统不支持，改用设计过的国家代码块。
+   ------------------------------------------------ */
+
+const FLAG_OK = (() => {
+  try {
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = 24;
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
+    ctx.font = '20px sans-serif';
+    ctx.textBaseline = 'top';
+    ctx.fillText('\u{1F1E8}\u{1F1F3}', 0, 0);      // 🇨🇳，红色面积大，便于判定
+    const d = ctx.getImageData(0, 0, 24, 24).data;
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i + 3] > 0 && (Math.abs(d[i] - d[i + 1]) > 32 || Math.abs(d[i + 1] - d[i + 2]) > 32)) {
+        return true;                                // 有彩色像素 = 真的画出了旗帜
+      }
+    }
+    return false;
+  } catch {
+    return false;
+  }
+})();
+
+/** 由区域指示符反推 ISO 双字母代码：🇯🇵 → JP */
+function flagCode(flag) {
+  const cp = [...String(flag)].map((ch) => ch.codePointAt(0));
+  return cp.length === 2 && cp.every((x) => x >= 0x1F1E6 && x <= 0x1F1FF)
+    ? cp.map((x) => String.fromCharCode(x - 0x1F1E6 + 65)).join('')
+    : '';
+}
+
+function flagHtml(p) {
+  const code = flagCode(p.flag);
+  if (FLAG_OK || !code) return `<span class="flag">${p.flag}</span>`;
+  return `<span class="flag flag-code" title="${p.country}">${code}</span>`;
+}
+
 function card(r, i = 0) {
   const p = r.pathway;
   const gaps = [...r.hardGaps, ...r.softGaps];
@@ -355,7 +395,7 @@ function card(r, i = 0) {
     <article class="card" style="--i:${Math.min(i, 12)}">
       <div class="card-top">
         <div class="title">
-          <span class="flag">${p.flag}</span>
+          ${flagHtml(p)}
           <div>
             <h3>${p.name}</h3>
             <p class="sub">${p.country} · ${p.nameEn}</p>

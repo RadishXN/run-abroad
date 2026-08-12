@@ -604,6 +604,22 @@ button { font: inherit; cursor: pointer; transition: all .16s; }
 
 .flag { flex: none; font-size: 26px; line-height: 1; }
 
+/* Windows 无旗帜字体时的降级：设计过的国家代码块 */
+.flag-code {
+  display: inline-grid;
+  place-items: center;
+  width: 34px; height: 24px;
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--muted);
+  background: var(--bg-tint);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  cursor: default;
+}
+
 .card h3 {
   margin: 0;
   font-family: var(--serif);
