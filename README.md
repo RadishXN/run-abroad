@@ -15,8 +15,6 @@
 
 [![点击这里开始](https://img.shields.io/badge/%E7%82%B9%E5%87%BB%E8%BF%99%E9%87%8C%E5%BC%80%E5%A7%8B-radishxn.github.io%2Frun--abroad-2c4a72?style=for-the-badge&logoColor=white)](https://radishxn.github.io/run-abroad/)
 
-<sub>免费 · 打开即用 · 不用注册 · 不收集任何信息</sub>
-
 ---
 
 [快速开始](#-快速开始) · [贡献数据](CONTRIBUTING.md) · [免责声明](#️-免责声明)
