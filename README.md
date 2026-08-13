@@ -4,7 +4,7 @@
 
 **填 10 项基本信息，看清自己能走哪些出国路径 —— 以及还差什么。**
 
-收录 71 条签证与移民路径 · 纯静态网页 · 零依赖 · 零追踪 · 所有计算在你的浏览器里完成
+收录 71 条签证与移民路径 · 所有计算在你的浏览器里完成
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](#-项目结构)
