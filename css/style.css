@@ -180,6 +180,7 @@ main { padding: var(--s8) 0 var(--s9); }
 }
 
 .field { display: flex; flex-direction: column; gap: var(--s2); min-width: 0; }
+.field[hidden] { display: none; }
 .field > span {
   font-size: 12px;
   font-weight: 600;

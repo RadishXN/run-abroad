@@ -174,6 +174,7 @@ const TYPE_LABEL = {
  * req 中所有字段都是「门槛」，留空 = 无此要求。
  *   age:[min,max]  minDeg  uniRank  gradWithin(年)  minEng
  *   workExp(年)  jobOffer(bool)  fundsUSD  skills[](满足其一即可)
+ *   income: { mode: remote|passive|either, minMonthlyUSD, foreignSource }
  *   studyIn: STUDY_LOC 的 key，表示学位必须在该地取得
  */
 const PATHWAYS = [
@@ -1050,7 +1051,7 @@ const PATHWAYS = [
     type: 'nomad',
     duration: '首次 2 年，可续 3 年',
     pr: '合法居住约 5 年可申永居；入籍已收紧至 10 年',
-    req: { minEng: ENG.daily, fundsUSD: 3800 },
+    req: { minEng: ENG.daily, income: { mode: 'remote', minMonthlyUSD: 3800, foreignSource: true } },
     quota: '无',
     cost: '申请费约 €180 + 住址证明 + 医疗保险',
     difficulty: 3,
@@ -1064,7 +1065,7 @@ const PATHWAYS = [
     type: 'nomad',
     duration: '首次 2 年，可续 3 年',
     pr: '合法居住约 5 年可申永居；入籍已收紧至 10 年',
-    req: { age: [18, 99], minEng: ENG.daily, fundsUSD: 1200 },
+    req: { age: [18, 99], minEng: ENG.daily, income: { mode: 'passive', minMonthlyUSD: 1200, foreignSource: false } },
     quota: '无',
     cost: '申请费低，需当地住址证明与医疗保险',
     difficulty: 3,
@@ -1078,7 +1079,7 @@ const PATHWAYS = [
     type: 'nomad',
     duration: '首次 1–3 年，可续',
     pr: '5 年可申长期居留，10 年可入籍',
-    req: { minEng: ENG.daily, fundsUSD: 3200, workExp: 3 },
+    req: { minEng: ENG.daily, workExp: 3, income: { mode: 'remote', minMonthlyUSD: 3200, foreignSource: true } },
     quota: '无',
     cost: '申请费低，需医保 + 无犯罪记录公证',
     difficulty: 3,
@@ -1106,7 +1107,7 @@ const PATHWAYS = [
     type: 'nomad',
     duration: '3–12 个月，可续 12 个月',
     pr: '不通往永居（另有 MM2H 长居计划）',
-    req: { fundsUSD: 24000, skills: ['tech', 'business', 'arts'] },
+    req: { skills: ['tech', 'business', 'arts'], income: { mode: 'remote', minMonthlyUSD: 2000, foreignSource: true } },
     quota: '无',
     cost: 'RM1,000 申请费',
     difficulty: 2,
@@ -1135,7 +1136,7 @@ const PATHWAYS = [
     type: 'nomad',
     duration: '首次最长 18 个月，累计可达 3 年',
     pr: '不通往永居（数字游民居留年限不计入入籍）',
-    req: { age: [18, 99], minEng: ENG.daily, fundsUSD: 3600 },
+    req: { age: [18, 99], minEng: ENG.daily, income: { mode: 'remote', minMonthlyUSD: 3600, foreignSource: true } },
     quota: '无',
     cost: '申请费约 €520',
     difficulty: 2,
@@ -1193,7 +1194,7 @@ const PATHWAYS = [
     type: 'nomad',
     duration: '直接申请居留，需每年在境内住满 183 天',
     pr: '约 6–12 个月可拿到永居身份证，后续可申请入籍',
-    req: { age: [18, 99], fundsUSD: 1800 },
+    req: { age: [18, 99], income: { mode: 'either', minMonthlyUSD: 1800, foreignSource: false } },
     quota: '无',
     cost: '申请费与证件工本费合计通常在数百美元量级',
     difficulty: 2,

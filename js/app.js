@@ -57,6 +57,32 @@ const OPTIONS = {
     { v: 100000, t: '70 万人民币左右' },
     { v: 500000, t: '350 万人民币以上' },
   ],
+  incomeType: [
+    { v: 'none', t: '无稳定持续收入' },
+    { v: 'employee', t: '受雇工资' },
+    { v: 'selfEmployed', t: '自由职业 / 自营或经营收入' },
+    { v: 'passive', t: '被动收入' },
+    { v: 'mixed', t: '多种收入' },
+  ],
+  remoteAbroad: [
+    { v: 'no', t: '不能' },
+    { v: 'uncertain', t: '不确定' },
+    { v: 'yes', t: '可以' },
+  ],
+  monthlyIncome: [
+    { v: 0, t: '无 / $0' },
+    { v: 999, t: '每月低于 $1,000（但有收入）' },
+    { v: 1000, t: '每月 $1,000–1,499' },
+    { v: 1500, t: '每月 $1,500–1,999' },
+    { v: 2000, t: '每月 $2,000–2,999' },
+    { v: 3000, t: '每月 $3,000–3,999' },
+    { v: 4000, t: '每月 $4,000 以上' },
+  ],
+  primaryIncomeCountry: [
+    '中国大陆',
+    ...new Set(PATHWAYS.map((p) => p.country)),
+    '其他国家 / 地区',
+  ].map((v) => ({ v, t: v })),
 };
 
 /* ── 构建表单 ───────────────────────────── */
@@ -78,6 +104,11 @@ function buildForm() {
   fill('french', OPTIONS.french);
   fill('workExp', OPTIONS.workExp);
   fill('funds', OPTIONS.funds);
+  fill('incomeType', OPTIONS.incomeType);
+  fill('remoteAbroad', OPTIONS.remoteAbroad);
+  fill('activeIncome', OPTIONS.monthlyIncome);
+  fill('passiveIncome', OPTIONS.monthlyIncome);
+  fill('primaryIncomeCountry', OPTIONS.primaryIncomeCountry);
 
   $('#langs').innerHTML = Object.entries(LANGS)
     .map(([k, v]) => chip('lang', k, v)).join('');
@@ -93,6 +124,8 @@ function buildForm() {
     .map(([k, v]) => chip('region', k, v)).join('');
   $('#excludes').innerHTML = Object.entries(EXCLUDES)
     .map(([k, v]) => chip('exclude', k, v.label, v.hint)).join('');
+
+  updateIncomeFields();
 }
 
 /* ── 自绘下拉框 ─────────────────────────────
@@ -226,6 +259,48 @@ function chip(group, value, label, hint) {
   </label>`;
 }
 
+function normalizeSkillSelection(changed) {
+  const skills = $$('[data-group="skill"]');
+  const none = skills.find((el) => el.value === 'none');
+  if (!none) return;
+
+  if (changed?.checked && changed.value === 'none') {
+    skills.forEach((el) => { if (el !== none) el.checked = false; });
+  } else if ((changed?.checked && changed.value !== 'none') ||
+    (none.checked && skills.some((el) => el.value !== 'none' && el.checked))) {
+    none.checked = false;
+  }
+}
+
+const FORM_ACTIVE_INCOME_TYPES = new Set(['employee', 'selfEmployed', 'mixed']);
+
+function setIncomeField(id, visible) {
+  const el = $('#' + id);
+  const field = $('#' + id + 'Field');
+  field.hidden = !visible;
+  el.disabled = !visible;
+  el.required = visible;
+  if (!visible) el.value = '';
+  syncSelectUI(el);
+}
+
+/** 收入问题只在与当前收入类型相关时展开。 */
+function updateIncomeFields() {
+  const incomeType = $('#incomeType').value;
+  const hasActive = FORM_ACTIVE_INCOME_TYPES.has(incomeType);
+  const hasPassive = ['passive', 'mixed'].includes(incomeType);
+  const canRemote = hasActive && $('#remoteAbroad').value === 'yes';
+
+  setIncomeField('remoteAbroad', hasActive);
+  setIncomeField('activeIncome', canRemote);
+  setIncomeField('primaryIncomeCountry', canRemote);
+  setIncomeField('passiveIncome', hasPassive);
+}
+
+function numberOrNull(el) {
+  return el.disabled || el.value === '' ? null : +el.value;
+}
+
 function readProfile() {
   const grad = $('#gradYears').value;
   return {
@@ -238,6 +313,13 @@ function readProfile() {
     french: +$('#french').value,
     workExp: +$('#workExp').value,
     funds: +$('#funds').value,
+    incomeType: $('#incomeType').value || null,
+    remoteAbroad: $('#remoteAbroad').disabled ? null : ($('#remoteAbroad').value || null),
+    activeIncome: numberOrNull($('#activeIncome')),
+    passiveIncome: numberOrNull($('#passiveIncome')),
+    primaryIncomeCountry: $('#primaryIncomeCountry').disabled
+      ? null
+      : ($('#primaryIncomeCountry').value || null),
     hasOffer: $('#hasOffer').checked,
     langs: $$('[data-group="lang"]:checked').map((el) => el.value),
     skills: $$('[data-group="skill"]:checked').map((el) => el.value),
@@ -480,6 +562,11 @@ function syncUrl(p) {
     rg: $$('[data-group="region"]:checked').map((el) => el.value).join('.'),
     ex: $$('[data-group="exclude"]:checked').map((el) => el.value).join('.'),
   });
+  if (p.incomeType) q.set('it', p.incomeType);
+  if (p.remoteAbroad) q.set('ra', p.remoteAbroad);
+  if (p.activeIncome != null) q.set('ai', p.activeIncome);
+  if (p.passiveIncome != null) q.set('pi', p.passiveIncome);
+  if (p.primaryIncomeCountry) q.set('ic', p.primaryIncomeCountry);
   history.replaceState(null, '', '?' + q.toString());
 }
 
@@ -489,6 +576,9 @@ function loadFromUrl() {
   const set = (id, key) => { if (q.has(key)) $('#' + id).value = q.get(key); };
   set('age', 'a'); set('degree', 'd'); set('uniRank', 'u'); set('studyLoc', 'l'); set('gradYears', 'g');
   set('english', 'e'); set('french', 'fr'); set('workExp', 'w'); set('funds', 'f');
+  set('incomeType', 'it'); set('remoteAbroad', 'ra'); set('activeIncome', 'ai');
+  set('passiveIncome', 'pi'); set('primaryIncomeCountry', 'ic');
+  updateIncomeFields();
   $('#hasOffer').checked = q.get('o') === '1';
   $('#onlyDeveloped').checked = q.get('dev') === '1';
   const check = (group, csv) => {
@@ -496,6 +586,7 @@ function loadFromUrl() {
     $$(`[data-group="${group}"]`).forEach((el) => { el.checked = want.has(el.value); });
   };
   check('skill', q.get('s'));
+  normalizeSkillSelection();
   check('goal', q.get('t'));
   check('lang', q.get('lg'));
   check('region', q.get('rg'));
@@ -521,6 +612,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 筛选条件变化只需重渲染，不必重跑匹配
   document.addEventListener('change', (e) => {
+    if (e.target.id === 'incomeType' || e.target.id === 'remoteAbroad') updateIncomeFields();
+    if (e.target.dataset?.group === 'skill') normalizeSkillSelection(e.target);
     if (!lastBucket) return;
     const g = e.target.dataset?.group;
     if (e.target.id === 'onlyDeveloped' || g === 'region' || g === 'exclude') {
