@@ -52,6 +52,35 @@ const STUDY_LOC = {
   other: '其他国家 / 地区',
 };
 
+/** 月收入问卷档位。value 兼容既有分享链接，min/max 用于保守比较门槛。 */
+const MONTHLY_INCOME_BANDS = [
+  { v: 0, min: 0, max: 0, t: '无 / $0' },
+  { v: 999, min: 1, max: 999, t: '每月低于 $1,000（但有收入）' },
+  { v: 1000, min: 1000, max: 1499, t: '每月 $1,000–1,499' },
+  { v: 1500, min: 1500, max: 1999, t: '每月 $1,500–1,999' },
+  { v: 2000, min: 2000, max: 2999, t: '每月 $2,000–2,999' },
+  { v: 3000, min: 3000, max: 3999, t: '每月 $3,000–3,999' },
+  { v: 4000, min: 4000, max: null, t: '每月 $4,000 以上' },
+];
+
+/**
+ * 主要收入来源地业务选项。单独维护，避免把「欧盟」等聚合路径值当成国家。
+ * 新增真实路径国家 / 地区时，validatePathways() 会检查这里是否同步补充。
+ */
+const INCOME_SOURCE_LOCATIONS = [
+  '中国大陆', '中国香港',
+  '日本', '韩国', '新加坡', '泰国', '马来西亚',
+  '英国', '爱尔兰', '荷兰', '德国', '法国', '葡萄牙', '西班牙', '意大利', '波兰',
+  '芬兰', '瑞典', '挪威', '丹麦', '比利时', '奥地利', '斯洛文尼亚', '克罗地亚',
+  '美国', '加拿大',
+  '澳大利亚', '新西兰',
+  '乌拉圭', '厄瓜多尔',
+  '格鲁吉亚', '阿联酋',
+  '其他国家 / 地区',
+];
+
+const AGGREGATE_PATHWAY_LOCATIONS = new Set(['欧盟']);
+
 const SKILLS = {
   tech: 'IT / 软件开发',
   engineering: '工程 / 制造',
@@ -174,7 +203,7 @@ const TYPE_LABEL = {
  * req 中所有字段都是「门槛」，留空 = 无此要求。
  *   age:[min,max]  minDeg  uniRank  gradWithin(年)  minEng
  *   workExp(年)  jobOffer(bool)  fundsUSD  skills[](满足其一即可)
- *   income: { mode: remote|passive|either, minMonthlyUSD, foreignSource }
+ *   income: { mode: remote|passive|either, minMonthlyUSD, foreignSource, shortfallHint? }
  *   studyIn: STUDY_LOC 的 key，表示学位必须在该地取得
  */
 const PATHWAYS = [
@@ -1150,11 +1179,17 @@ const PATHWAYS = [
     type: 'nomad',
     duration: '1 年，不可续签',
     pr: '不通往永居',
-    req: { age: [18, 99], minEng: ENG.daily, fundsUSD: 3300 },
+    req: {
+      age: [18, 99], minEng: ENG.daily,
+      income: {
+        mode: 'remote', minMonthlyUSD: 3300, foreignSource: true,
+        shortfallHint: '也可核对能否通过其他合法经济来源证明资金充足',
+      },
+    },
     quota: '无',
     cost: '签证费约 $100 + 落地登记费约 $130 + 医疗保险（保额需 €3 万以上）',
     difficulty: 2,
-    notes: '2025 年才推出的新政，申请成本极低。最大的限制是**不可续签**：住满 1 年必须离境，满 6 个月后才能重新申请，所以只适合当作一段体验而非长期落脚。需在使领馆办理，不能落地转。首都卢布尔雅那之外的城市配套对远程工作者不太友好。',
+    notes: '2025 年才推出的新政，申请成本极低。最大的限制是**不可续签**：住满 1 年必须离境，满 6 个月后才能重新申请，所以只适合当作一段体验而非长期落脚。收入金额会随官方基准调整；这里用约 $3,300/月作为保守的初筛参考，申请前必须确认最新官方基准。除持续境外远程收入外，其他合法经济来源也可能用于证明资金充足，需按申请时的官方要求准备证明。需在使领馆办理，不能落地转。首都卢布尔雅那之外的城市配套对远程工作者不太友好。',
     official: 'https://www.gov.si/en/topics/digital-nomads/',
   },
 
@@ -1293,6 +1328,7 @@ const PATHWAYS = [
 /** 简单的一致性自检，帮助贡献者在浏览器控制台里发现数据问题。 */
 function validatePathways() {
   const seen = new Set();
+  const incomeSources = new Set(INCOME_SOURCE_LOCATIONS);
   const problems = [];
   for (const p of PATHWAYS) {
     if (seen.has(p.id)) problems.push(`重复 id: ${p.id}`);
@@ -1302,6 +1338,12 @@ function validatePathways() {
     }
     if (!TYPE_LABEL[p.type]) problems.push(`${p.id} 的 type "${p.type}" 未定义`);
     if (!REGION_OF[p.country]) problems.push(`${p.id} 的国家「${p.country}」未归入地区，请补 REGION_OF`);
+    if (!AGGREGATE_PATHWAY_LOCATIONS.has(p.country) && !incomeSources.has(p.country)) {
+      problems.push(`${p.id} 的国家「${p.country}」未加入 INCOME_SOURCE_LOCATIONS`);
+    }
+  }
+  for (const location of AGGREGATE_PATHWAY_LOCATIONS) {
+    if (incomeSources.has(location)) problems.push(`聚合路径值「${location}」不应出现在收入来源选项中`);
   }
   return problems;
 }

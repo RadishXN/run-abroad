@@ -13,21 +13,31 @@ const SOFT = 'soft';
 
 const MATCH_ACTIVE_INCOME_TYPES = new Set(['employee', 'selfEmployed', 'mixed']);
 
+function compareIncomeBand(value, threshold) {
+  if (value == null) return 'unknown';
+  const band = MONTHLY_INCOME_BANDS.find((item) => item.v === Number(value));
+  if (!band) return Number(value) >= threshold ? 'met' : 'below';
+  if (band.min >= threshold) return 'met';
+  if (band.max != null && band.max < threshold) return 'below';
+  return 'ambiguous';
+}
+
+/** 先判断是否满足，再识别缺失或档位歧义，最后选择一条最相关的用户提示。 */
 function checkIncome(profile, p, income) {
   const activeType = MATCH_ACTIVE_INCOME_TYPES.has(profile.incomeType);
   const passiveType = ['passive', 'mixed'].includes(profile.incomeType);
   const sourceKnown = !!profile.primaryIncomeCountry;
   const sourceOk = !income.foreignSource ||
     (sourceKnown && profile.primaryIncomeCountry !== p.country);
+  const activeAmount = compareIncomeBand(profile.activeIncome, income.minMonthlyUSD);
+  const passiveAmount = compareIncomeBand(profile.passiveIncome, income.minMonthlyUSD);
 
   const remoteOk = activeType &&
     profile.remoteAbroad === 'yes' &&
-    profile.activeIncome != null &&
-    profile.activeIncome >= income.minMonthlyUSD &&
+    activeAmount === 'met' &&
     sourceOk;
   const passiveOk = passiveType &&
-    profile.passiveIncome != null &&
-    profile.passiveIncome >= income.minMonthlyUSD;
+    passiveAmount === 'met';
 
   if (income.mode === 'remote' && remoteOk) return null;
   if (income.mode === 'passive' && passiveOk) return null;
@@ -37,10 +47,10 @@ function checkIncome(profile, p, income) {
   const remoteUnknown = incomeTypeUnknown || (activeType && (
     profile.remoteAbroad == null || profile.remoteAbroad === 'uncertain' ||
     (profile.remoteAbroad === 'yes' &&
-      (profile.activeIncome == null || (income.foreignSource && !sourceKnown)))
+      (activeAmount === 'unknown' || (income.foreignSource && !sourceKnown)))
   ));
   const passiveUnknown = incomeTypeUnknown ||
-    (passiveType && profile.passiveIncome == null);
+    (passiveType && passiveAmount === 'unknown');
   const unknown = income.mode === 'remote' ? remoteUnknown
     : income.mode === 'passive' ? passiveUnknown
       : remoteUnknown || passiveUnknown;
@@ -48,20 +58,28 @@ function checkIncome(profile, p, income) {
   const checksRemote = income.mode === 'remote' || income.mode === 'either';
   const checksPassive = income.mode === 'passive' || income.mode === 'either';
   const threshold = `$${income.minMonthlyUSD.toLocaleString()}/月`;
+  const withShortfallHint = (message) => income.shortfallHint
+    ? `${message}；${income.shortfallHint}`
+    : message;
   let text;
   if (checksRemote && activeType && profile.remoteAbroad === 'no') {
     text = '当前工作不能长期在境外远程进行';
   } else if (checksRemote && activeType && profile.remoteAbroad === 'uncertain') {
     text = '需先确认当前工作是否允许长期在境外远程进行';
   } else if (checksRemote && activeType && profile.remoteAbroad === 'yes' &&
-    profile.activeIncome != null && profile.activeIncome < income.minMonthlyUSD) {
-    text = `当前远程收入低于该路径约 ${threshold}的要求`;
+    activeAmount === 'below') {
+    text = withShortfallHint(`当前远程收入低于该路径约 ${threshold}的要求`);
+  } else if (checksRemote && activeType && profile.remoteAbroad === 'yes' &&
+    activeAmount === 'ambiguous') {
+    text = `当前远程收入档位无法确认是否达到该路径约 ${threshold}的要求`;
   } else if (checksRemote && activeType && profile.remoteAbroad === 'yes' &&
     income.foreignSource && sourceKnown && profile.primaryIncomeCountry === p.country) {
     text = '主要收入来自目标国家/地区，不符合该路径以境外收入为主的要求';
   } else if (checksPassive && passiveType && profile.passiveIncome != null &&
-    profile.passiveIncome < income.minMonthlyUSD) {
-    text = `当前稳定被动收入低于该路径约 ${threshold}的要求`;
+    passiveAmount === 'below') {
+    text = withShortfallHint(`当前稳定被动收入低于该路径约 ${threshold}的要求`);
+  } else if (checksPassive && passiveType && passiveAmount === 'ambiguous') {
+    text = `当前稳定被动收入档位无法确认是否达到该路径约 ${threshold}的要求`;
   } else if (unknown) {
     text = '需补充持续收入信息，确认这条路径的收入条件';
   } else if (income.mode === 'remote') {

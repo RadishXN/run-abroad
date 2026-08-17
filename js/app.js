@@ -5,6 +5,24 @@ const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
 /* ── 表单选项 ───────────────────────────── */
 
+function orderIncomeSourceLocations(locations) {
+  const first = ['中国大陆', '中国香港'];
+  const last = '其他国家 / 地区';
+  const fallbackCompare = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+  let compare = fallbackCompare;
+  try {
+    const pinyin = new Intl.Collator('zh-CN-u-co-pinyin');
+    compare = (a, b) => pinyin.compare(a, b) || fallbackCompare(a, b);
+  } catch (_) {
+    // 极少数精简运行环境没有拼音排序数据，退回稳定的 Unicode 顺序。
+  }
+  const middle = locations
+    .filter((location) => !first.includes(location) && location !== last)
+    .sort(compare);
+  return [...first.filter((location) => locations.includes(location)), ...middle,
+    ...(locations.includes(last) ? [last] : [])];
+}
+
 const OPTIONS = {
   degree: [
     { v: DEG.highschool, t: '高中 / 中专' },
@@ -69,20 +87,9 @@ const OPTIONS = {
     { v: 'uncertain', t: '不确定' },
     { v: 'yes', t: '可以' },
   ],
-  monthlyIncome: [
-    { v: 0, t: '无 / $0' },
-    { v: 999, t: '每月低于 $1,000（但有收入）' },
-    { v: 1000, t: '每月 $1,000–1,499' },
-    { v: 1500, t: '每月 $1,500–1,999' },
-    { v: 2000, t: '每月 $2,000–2,999' },
-    { v: 3000, t: '每月 $3,000–3,999' },
-    { v: 4000, t: '每月 $4,000 以上' },
-  ],
-  primaryIncomeCountry: [
-    '中国大陆',
-    ...new Set(PATHWAYS.map((p) => p.country)),
-    '其他国家 / 地区',
-  ].map((v) => ({ v, t: v })),
+  monthlyIncome: MONTHLY_INCOME_BANDS,
+  primaryIncomeCountry: orderIncomeSourceLocations(INCOME_SOURCE_LOCATIONS)
+    .map((v) => ({ v, t: v })),
 };
 
 /* ── 构建表单 ───────────────────────────── */
@@ -342,9 +349,9 @@ let lastProfile = null;
 function run() {
   lastProfile = readProfile();
   lastBucket = matchAll(lastProfile);
+  syncUrl(lastProfile);
   render();
   $('#results').hidden = false;
-  syncUrl(lastProfile);
 }
 
 /** 筛选与渲染分离：切换筛选器时不需要重新跑匹配。 */
@@ -468,6 +475,13 @@ function fmt(s) {
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 }
 
+function detailHref(id) {
+  const q = new URLSearchParams({ id });
+  const returnState = location.search.slice(1);
+  if (returnState) q.set('return', returnState);
+  return `pathway.html?${q.toString()}`;
+}
+
 /* ── 国旗降级 ─────────────────────────────
    Windows 没有内置旗帜字体，🇯🇵 这类「区域指示符对」会退化成两个
    字母，排版很难看。这里画一个已知有彩色的旗帜到 canvas 上，
@@ -545,7 +559,7 @@ function card(r, i = 0) {
         </div>` : '<div class="gaps none">✓ 所列门槛均已满足</div>'}
 
       <div class="card-links">
-        <a class="official" href="pathway.html?id=${p.id}">查看详细条件与流程 →</a>
+        <a class="official" href="${fmt(detailHref(p.id))}">查看详细条件与流程 →</a>
         <a class="official secondary" href="${p.official}" target="_blank" rel="noopener noreferrer">官网</a>
       </div>
     </article>`;
@@ -617,8 +631,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!lastBucket) return;
     const g = e.target.dataset?.group;
     if (e.target.id === 'onlyDeveloped' || g === 'region' || g === 'exclude') {
-      render();
       syncUrl(lastProfile);
+      render();
     }
   });
 
