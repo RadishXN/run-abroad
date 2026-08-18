@@ -11,6 +11,17 @@ function md(s) {
   return esc(s).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 }
 
+function incomeRequirement(income) {
+  const mode = {
+    remote: '可长期在境外进行的远程主动收入',
+    passive: '稳定被动收入',
+    either: '远程主动收入或稳定被动收入',
+  }[income.mode] || '持续收入';
+  const parts = [mode, `约 $${income.minMonthlyUSD.toLocaleString()}/月以上`];
+  if (income.foreignSource) parts.push('主要收入需来自目标国家 / 地区以外');
+  return parts.join('；');
+}
+
 /** 把 req 翻译成人话，逐条列出，而不是塞在一段话里 */
 function requirements(p) {
   const r = p.req || {};
@@ -26,6 +37,7 @@ function requirements(p) {
   if (r.workExp != null) rows.push(['工作经验', `${r.workExp} 年以上`]);
   if (r.jobOffer) rows.push(['雇主', '需先拿到当地的工作 / 培训合同']);
   if (r.fundsUSD != null) rows.push(['资金', `约 $${r.fundsUSD.toLocaleString()}（资金证明或存款）`]);
+  if (r.income) rows.push(['持续收入', incomeRequirement(r.income)]);
   if (r.skills) rows.push(['偏好背景', r.skills.map((s) => SKILLS[s]).join(' / ')]);
   if (!rows.length) rows.push(['门槛', '无硬性门槛']);
   return rows;
@@ -114,7 +126,12 @@ function render(p) {
 }
 
 (function init() {
-  const id = new URLSearchParams(location.search).get('id');
+  const q = new URLSearchParams(location.search);
+  const back = document.querySelector('.back');
+  const returnState = q.get('return');
+  back.href = returnState ? `index.html?${returnState}` : 'index.html';
+
+  const id = q.get('id');
   const p = PATHWAYS.find((x) => x.id === id);
 
   if (!p) {
@@ -123,10 +140,4 @@ function render(p) {
     return;
   }
   render(p);
-
-  // 从结果页点进来的，返回时保留原来的筛选条件
-  const back = document.querySelector('.back');
-  if (document.referrer.includes('index.html') || document.referrer.endsWith('/')) {
-    back.addEventListener('click', (e) => { e.preventDefault(); history.back(); });
-  }
 })();

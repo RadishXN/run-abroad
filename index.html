@@ -13,7 +13,7 @@
   <div class="wrap">
     <h1>我能怎么润？</h1>
     <p class="lead">
-      填 10 项基本信息，从 <b id="total">0</b> 条签证 / 移民路径里筛出适合你的，
+      填写少量基本信息，从 <b id="total">0</b> 条签证 / 移民路径里筛出适合你的，
       并告诉你<strong>还差什么</strong>。
     </p>
     <p class="privacy">全部计算在你的浏览器里完成 · 不上传、不存储、无后端</p>
@@ -72,6 +72,35 @@
         <span>可动用资金</span>
         <select id="funds" required></select>
         <small>用于资金证明 / 封锁账户 / 申请费</small>
+      </label>
+
+      <label class="field">
+        <span>主要持续收入类型</span>
+        <select id="incomeType" required></select>
+        <small>只用于初步区分主动、被动收入与可动用存款</small>
+      </label>
+
+      <label class="field" id="remoteAbroadField" hidden>
+        <span>当前工作能否长期在境外完成</span>
+        <select id="remoteAbroad" disabled></select>
+      </label>
+
+      <label class="field" id="activeIncomeField" hidden>
+        <span>可持续的主动月收入</span>
+        <select id="activeIncome" disabled></select>
+        <small>税前粗略档位即可</small>
+      </label>
+
+      <label class="field" id="primaryIncomeCountryField" hidden>
+        <span>主要收入来源国家 / 地区</span>
+        <select id="primaryIncomeCountry" disabled></select>
+        <small>按主要雇主或客户所在地选择</small>
+      </label>
+
+      <label class="field" id="passiveIncomeField" hidden>
+        <span>可持续的被动月收入</span>
+        <select id="passiveIncome" disabled></select>
+        <small>如房租、养老金、分红或利息</small>
       </label>
 
       <label class="field checkbox">

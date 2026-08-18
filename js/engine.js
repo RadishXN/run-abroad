@@ -11,6 +11,89 @@ const HARD = 'hard';
 /** 软性缺口：花时间或花钱可以补（语言、工作经验、资金、offer） */
 const SOFT = 'soft';
 
+const MATCH_ACTIVE_INCOME_TYPES = new Set(['employee', 'selfEmployed', 'mixed']);
+
+function compareIncomeBand(value, threshold) {
+  if (value == null) return 'unknown';
+  const band = MONTHLY_INCOME_BANDS.find((item) => item.v === Number(value));
+  if (!band) return Number(value) >= threshold ? 'met' : 'below';
+  if (band.min >= threshold) return 'met';
+  if (band.max != null && band.max < threshold) return 'below';
+  return 'ambiguous';
+}
+
+/** 先判断是否满足，再识别缺失或档位歧义，最后选择一条最相关的用户提示。 */
+function checkIncome(profile, p, income) {
+  const activeType = MATCH_ACTIVE_INCOME_TYPES.has(profile.incomeType);
+  const passiveType = ['passive', 'mixed'].includes(profile.incomeType);
+  const sourceKnown = !!profile.primaryIncomeCountry;
+  const sourceOk = !income.foreignSource ||
+    (sourceKnown && profile.primaryIncomeCountry !== p.country);
+  const activeAmount = compareIncomeBand(profile.activeIncome, income.minMonthlyUSD);
+  const passiveAmount = compareIncomeBand(profile.passiveIncome, income.minMonthlyUSD);
+
+  const remoteOk = activeType &&
+    profile.remoteAbroad === 'yes' &&
+    activeAmount === 'met' &&
+    sourceOk;
+  const passiveOk = passiveType &&
+    passiveAmount === 'met';
+
+  if (income.mode === 'remote' && remoteOk) return null;
+  if (income.mode === 'passive' && passiveOk) return null;
+  if (income.mode === 'either' && (remoteOk || passiveOk)) return null;
+
+  const incomeTypeUnknown = profile.incomeType == null;
+  const remoteUnknown = incomeTypeUnknown || (activeType && (
+    profile.remoteAbroad == null || profile.remoteAbroad === 'uncertain' ||
+    (profile.remoteAbroad === 'yes' &&
+      (activeAmount === 'unknown' || (income.foreignSource && !sourceKnown)))
+  ));
+  const passiveUnknown = incomeTypeUnknown ||
+    (passiveType && passiveAmount === 'unknown');
+  const unknown = income.mode === 'remote' ? remoteUnknown
+    : income.mode === 'passive' ? passiveUnknown
+      : remoteUnknown || passiveUnknown;
+
+  const checksRemote = income.mode === 'remote' || income.mode === 'either';
+  const checksPassive = income.mode === 'passive' || income.mode === 'either';
+  const threshold = `$${income.minMonthlyUSD.toLocaleString()}/月`;
+  const withShortfallHint = (message) => income.shortfallHint
+    ? `${message}；${income.shortfallHint}`
+    : message;
+  let text;
+  if (checksRemote && activeType && profile.remoteAbroad === 'no') {
+    text = '当前工作不能长期在境外远程进行';
+  } else if (checksRemote && activeType && profile.remoteAbroad === 'uncertain') {
+    text = '需先确认当前工作是否允许长期在境外远程进行';
+  } else if (checksRemote && activeType && profile.remoteAbroad === 'yes' &&
+    activeAmount === 'below') {
+    text = withShortfallHint(`当前远程收入低于该路径约 ${threshold}的要求`);
+  } else if (checksRemote && activeType && profile.remoteAbroad === 'yes' &&
+    activeAmount === 'ambiguous') {
+    text = `当前远程收入档位无法确认是否达到该路径约 ${threshold}的要求`;
+  } else if (checksRemote && activeType && profile.remoteAbroad === 'yes' &&
+    income.foreignSource && sourceKnown && profile.primaryIncomeCountry === p.country) {
+    text = '主要收入来自目标国家/地区，不符合该路径以境外收入为主的要求';
+  } else if (checksPassive && passiveType && profile.passiveIncome != null &&
+    passiveAmount === 'below') {
+    text = withShortfallHint(`当前稳定被动收入低于该路径约 ${threshold}的要求`);
+  } else if (checksPassive && passiveType && passiveAmount === 'ambiguous') {
+    text = `当前稳定被动收入档位无法确认是否达到该路径约 ${threshold}的要求`;
+  } else if (unknown) {
+    text = '需补充持续收入信息，确认这条路径的收入条件';
+  } else if (income.mode === 'remote') {
+    text = `需要可长期在境外完成的远程工作，并有每月约 $${income.minMonthlyUSD.toLocaleString()} 的持续主动收入` +
+      (income.foreignSource ? '（主要来自居住国以外）' : '');
+  } else if (income.mode === 'passive') {
+    text = `需要每月约 $${income.minMonthlyUSD.toLocaleString()} 的持续被动收入`;
+  } else {
+    text = `需要每月约 $${income.minMonthlyUSD.toLocaleString()} 的持续远程或被动收入`;
+  }
+
+  return { kind: SOFT, field: 'income', text };
+}
+
 function checkPathway(profile, p) {
   const req = p.req || {};
   const gaps = [];
@@ -92,6 +175,12 @@ function checkPathway(profile, p) {
       kind: SOFT, field: 'funds',
       text: `需准备约 $${req.fundsUSD.toLocaleString()} 资金证明，超出你的预算区间`,
     });
+  }
+
+  // 持续收入：远程能力、金额和来源地合并为一个初筛缺口。
+  if (req.income) {
+    const gap = checkIncome(profile, p, req.income);
+    if (gap) gaps.push(gap);
   }
 
   // 学位就读地：部分路径只认在当地取得的学位
@@ -179,7 +268,11 @@ function scoreOf(profile, p, status, softGaps, skillMatch) {
     if (p.difficulty >= 4) score -= 4;
   }
   if (goals.includes('study') && p.type === 'study') score += 12;
-  if (goals.includes('remote') && p.type === 'nomad') score += 16;
+  const incomeMode = p.req?.income?.mode;
+  const remoteRelevant = incomeMode
+    ? ['remote', 'either'].includes(incomeMode)
+    : p.type === 'nomad';
+  if (goals.includes('remote') && remoteRelevant) score += 16;
   if (goals.includes('business') && p.type === 'invest') score += 14;
   if (goals.includes('family') && ['workholiday', 'soft'].includes(p.type)) score -= 8;
 
@@ -216,6 +309,7 @@ function bottlenecks(bucket) {
     workExp: '积累工作经验',
     degree: '提升学历（读一个硕士）',
     funds: '攒够资金证明',
+    income: '确认并建立符合路径要求的持续收入',
     jobOffer: '拿到一个海外雇主 offer',
     skills: '转向紧缺职业方向',
     gradWithin: '尽快在毕业窗口期内行动',
