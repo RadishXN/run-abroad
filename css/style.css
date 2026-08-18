@@ -881,6 +881,87 @@ footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 .official.secondary:hover { color: var(--ink); }
 
 /* ============================================================
+   数字游民专页
+   ============================================================ */
+
+.prose p { margin: 0 0 var(--s4); font-size: 15px; line-height: 1.9; color: var(--ink-soft); }
+.prose p:last-child { margin-bottom: 0; }
+.prose strong { font-weight: 600; color: var(--ink); }
+.prose em { font-style: italic; color: var(--ink); }
+.prose blockquote {
+  margin: var(--s5) 0;
+  padding: var(--s3) 0 var(--s3) var(--s5);
+  border-left: 2px solid var(--accent);
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.btn-link {
+  display: block;
+  width: 100%;
+  margin-top: var(--s7);
+  padding: 15px;
+  text-align: center;
+  text-decoration: none;
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--panel);
+  background: var(--ink);
+  border-radius: var(--r-md);
+  transition: background .16s;
+}
+.btn-link:hover { background: var(--accent-ink); }
+
+/* 宽表格自己横向滚动，页面本身不出现横向滚动条 */
+.table-scroll {
+  overflow-x: auto;
+  margin-top: var(--s5);
+  -webkit-overflow-scrolling: touch;
+}
+
+.cmp { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 620px; }
+.cmp th {
+  padding: 0 var(--s4) var(--s3) 0;
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--faint);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.cmp td {
+  padding: var(--s4) var(--s4) var(--s4) 0;
+  border-bottom: 1px solid var(--hair);
+  vertical-align: top;
+  color: var(--ink-soft);
+}
+.cmp tr:last-child td { border-bottom: 0; }
+.cmp b { font-size: 15.5px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.cmp .unit { font-size: 11.5px; font-weight: 400; color: var(--faint); margin-left: 1px; }
+.cmp .sub2 { display: block; margin-top: 2px; font-size: 11.5px; color: var(--faint); }
+.cmp .flag-note { font-style: normal; color: var(--near); }
+.cmp .c-flag { margin-right: var(--s2); }
+.cmp a { color: var(--ink); text-decoration: none; font-weight: 600; border-bottom: 1px solid var(--line); }
+.cmp a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.cmp .diff { letter-spacing: 1.5px; font-size: 10px; white-space: nowrap; }
+
+.pr-tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pr-tag.yes { color: var(--ok); background: var(--ok-wash); }
+.pr-tag.no { color: var(--muted); background: var(--bg-tint); }
+
+/* ============================================================
    响应式与无障碍
    ============================================================ */
 
@@ -904,3 +985,12 @@ footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
   }
   .card:hover, .primary:active { transform: none; }
 }
+
+.hero-alt { margin: var(--s4) 0 0; font-size: 13.5px; }
+.hero-alt a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  padding-bottom: 1px;
+}
+.hero-alt a:hover { border-bottom-color: var(--accent); }

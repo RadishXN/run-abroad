@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数字游民签证 · 我够得着哪几个？</title>
+<meta name="description" content="把你的收入类型、能否远程、月收入档位代进去，逐条比对数字游民签证的门槛，告诉你哪条能走、哪条差什么。纯静态、开源、不收集任何数据。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>数字游民签证<br>我够得着哪几个？</h1>
+    <p class="lead">
+      逐条比对 <b id="nomadCount">0</b> 条数字游民路径的收入门槛，
+      告诉你哪条<strong>现在就能申</strong>、哪条差什么。
+    </p>
+    <p class="privacy">全部计算在你的浏览器里完成 · 不上传、不存储、无后端</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="panel d-block">
+    <h2>为什么做这个</h2>
+    <div class="prose">
+      <p>想做数字游民的人，最先卡住的通常不是「去哪个国家」，而是一个更朴素的问题：</p>
+      <blockquote>我这个收入，到底够得着哪几个国家？</blockquote>
+      <p>
+        网上不缺数字游民签证的盘点。缺的是把你的实际情况代进去——你月入八千、工作能远程但雇主在国内、
+        手里有二十万存款，这些条件下，哪些国家现在就能申，哪些差在收入，哪些差在「你的收入来源地不对」。
+      </p>
+      <p>
+        而且这里有个特别容易踩的坑：<strong>有存款不等于有收入。</strong>
+        数字游民签看的几乎都是「每月持续的境外收入」，不是你账户里躺着多少钱。
+        很多人拿着攒下的积蓄去对照门槛，以为够了，实际上第一关就过不去——
+        因为这类签证要确认的是你<em>在当地生活期间能不能持续赚到钱</em>，而不是你能不能撑一段时间。
+      </p>
+      <p>
+        还有一层更隐蔽的：<strong>大多数数字游民签不通往永居。</strong>
+        它给的是「合法长住」，不是身份路径。住满几年也不累积入籍年限，
+        这和留学、工签那类路线有本质区别——如果你的目标是身份，选错类别会白花几年。
+      </p>
+      <p>
+        这一页就是来解决这一步的：把你的收入类型、能否长期在境外远程、月收入档位、收入来源地代进去，
+        逐条比对门槛，输出哪条能走、哪条差什么。
+      </p>
+    </div>
+    <a class="primary btn-link" href="index.html?t=remote#form">填条件，看我能走哪条 →</a>
+  </section>
+
+  <section class="panel d-block">
+    <h2>九条路径，横着看一眼</h2>
+    <p class="notes">
+      收入门槛是<strong>每月持续收入</strong>；标「存款」的那两条要的是账户余额，性质不同。
+      金额为初筛参考值，各国按本地最低工资逐年调整，申请前务必核对官网。
+    </p>
+    <div class="table-scroll">
+      <table class="cmp" id="cmp"></table>
+    </div>
+  </section>
+
+  <section class="panel d-block d-warn">
+    <h2>三个最常见的误解</h2>
+    <ul class="d-list" id="myths"></ul>
+  </section>
+
+  <section class="panel disclaimer">
+    <h2>请务必读一下</h2>
+    <ul>
+      <li><b>这是初筛工具，不是法律意见。</b>结果只说明「值得去查哪几条路」，不代表你一定能申请成功。</li>
+      <li><b>金额年年变。</b>多数国家的门槛挂钩本地最低工资或平均工资，每年调整，<b>一切以官网为准</b>。</li>
+      <li><b>警惕中介。</b>这些签证绝大多数可以自己 DIY 申请。声称「包过」「内部名额」的一律高度警惕。</li>
+      <li><b>税务没有算在内。</b>长期居住会触发当地税务居民身份，这一层本工具不覆盖，需要单独咨询。</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><a href="index.html">← 回到完整版：71 条出国路径筛选</a></p>
+    <p>开源项目 · MIT License · 欢迎 PR 补充路径和纠错</p>
+    <p><a href="https://github.com/RadishXN/run-abroad" target="_blank" rel="noopener noreferrer">GitHub 仓库</a></p>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/nomad.js"></script>
+</body>
+</html>
