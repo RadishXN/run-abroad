@@ -986,7 +986,7 @@ footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
   .card:hover, .primary:active { transform: none; }
 }
 
-.hero-alt { margin: var(--s4) 0 0; font-size: 13.5px; }
+.hero-alt { display: flex; gap: var(--s5); justify-content: center; flex-wrap: wrap; margin: var(--s4) 0 0; font-size: 13.5px; }
 .hero-alt a {
   color: var(--accent);
   text-decoration: none;
@@ -994,3 +994,80 @@ footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
   padding-bottom: 1px;
 }
 .hero-alt a:hover { border-bottom-color: var(--accent); }
+
+/* ============================================================
+   香港专题页
+   ============================================================ */
+
+.hk-quiz { margin-top: var(--s5); }
+.hk-q { border-top: 1px solid var(--hair); margin: 0; padding: var(--s5) 0 0; }
+.hk-q:first-child { border-top: 0; padding-top: 0; }
+.hk-q legend { font-size: 15px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--ink); }
+.hk-q legend em {
+  display: block;
+  margin: var(--s1) 0 0;
+  font-style: normal;
+  font-size: 12.5px;
+  color: var(--faint);
+}
+.hk-q .chips { margin-top: var(--s3); margin-bottom: var(--s5); }
+.hk-q .chip input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+.hk-summary .hk-none {
+  margin: var(--s5) 0 0;
+  padding-top: var(--s5);
+  border-top: 1px solid var(--hair);
+  font-size: 14px;
+}
+
+.hk-card { border-left: 3px solid var(--line); }
+.hk-card.ok { border-left-color: var(--ok); }
+.hk-card.near { border-left-color: var(--near); }
+.hk-card.no { border-left-color: var(--no); opacity: .72; }
+.hk-card.no:hover { opacity: 1; }
+
+.hk-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--s4);
+  flex-wrap: wrap;
+}
+.hk-card h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s3);
+  flex-wrap: wrap;
+}
+.hk-tag {
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--muted);
+  padding: 2px 9px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+}
+.hk-status {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+.hk-status.ok { color: var(--ok); background: var(--ok-wash); }
+.hk-status.near { color: var(--near); background: var(--near-wash); }
+.hk-status.no { color: var(--muted); background: var(--bg-tint); }
+
+.hk-notes { margin-top: var(--s5); font-size: 14px; line-height: 1.8; }
+.hk-notes li { margin-bottom: var(--s2); }
+.hk-notes li::marker { color: var(--accent); }
+
+.hk-verified { margin-left: var(--s4); font-size: 11.5px; color: var(--faint); }
+
+.hk-uncertain li { margin-bottom: var(--s4); }
+.hk-uncertain b { color: var(--ink); }

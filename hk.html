@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>香港工作签证 · 我该走哪一条？</title>
+<meta name="description" content="答 7 道题，逐条比对高才通 A/B/C、IANG、专才五条路径，告诉你符合哪几条、差在哪里。纯静态、开源、不收集任何数据。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>去香港工作<br>我该走哪一条？</h1>
+    <p class="lead">
+      答 7 道题，逐条比对 <b id="schemeCount">0</b> 条路径，
+      告诉你符合哪几条、<strong>差在哪里</strong>。
+    </p>
+    <p class="privacy">全部计算在你的浏览器里完成 · 不上传、不存储、无后端</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="panel d-block">
+    <h2>为什么做这个</h2>
+    <div class="prose">
+      <p>打算去香港工作的人，卡住的第一关往往不是「香港好不好」，而是一个更具体的问题：</p>
+      <blockquote>高才通、IANG、专才——我到底该走哪一条？</blockquote>
+      <p>
+        这几条路的资料都不难找，难的是搞清楚它们的分界线到底在哪。
+        高才通自己就分 A、B、C 三类，条件差得很远：A 类完全不看学历、只看收入；
+        B 类和 C 类的唯一区别是「过去五年有没有满三年工作经验」，
+        但 C 类要抢年度配额，B 类不用。
+      </p>
+      <p>
+        更容易被忽略的是那些<strong>不写在申请条件里、却决定成败的差别</strong>：
+        专才绑定雇主，换工作要事先报批；IANG 可以重复申请，高才通不行；
+        而所有这些路径的七年永居时钟，都会因为一次断签而清零重算。
+      </p>
+      <p>
+        这一页就是来解决这一步的：把你的学历来源、工作年限、收入档位、有没有雇主代入进去，
+        逐条比对五条路径，输出你符合哪几条、差在哪里，以及每条路各自的隐藏代价。
+      </p>
+    </div>
+  </section>
+
+  <section class="panel d-block">
+    <h2>七道题</h2>
+    <p class="notes">答完即时出结果，不用提交。所有选择只留在这个页面里。</p>
+    <div id="quiz" class="hk-quiz"></div>
+  </section>
+
+  <div id="result"></div>
+
+  <section class="panel d-block">
+    <h2>五条路横着看一眼</h2>
+    <div class="table-scroll">
+      <table class="cmp" id="cmp"></table>
+    </div>
+  </section>
+
+  <section class="panel d-block d-warn">
+    <h2>断签与永居：最容易被忽略的一层</h2>
+    <ul class="d-list">
+      <li><b>七年永居要求「连续通常居住」。</b>一次断签，年限从下一次取得有效签证起<b>重新计算</b>——之前住的几年不会保留。</li>
+      <li><b>审批期间不得留港。</b>续签处理中若逗留期届满，必须在届满前离境，否则构成逾期居留。这是最常见的断签原因之一。</li>
+      <li><b>受养人跟着主申请人走。</b>保证人失去逗留资格，配偶与未成年子女的逗留权一并受影响（已取得永居的除外）。</li>
+      <li><b>离港天数会影响「通常居住」认定。</b>长期不在港需要有合理解释，不要以为拿到签证就自动开始倒计时。</li>
+      <li><b>顶尖人才路径只加速签证年期，不加速永居。</b>七年就是七年。</li>
+    </ul>
+  </section>
+
+  <section class="panel d-block">
+    <h2>这几点我没有写死</h2>
+    <p class="notes">
+      整理资料与入境处官网的表述存在出入，或官网未直接列出。与其挑一个说法写死，不如把分歧摆出来——
+      涉及你自身情况的，请直接向入境处求证。
+    </p>
+    <ul class="d-list hk-uncertain" id="uncertain"></ul>
+  </section>
+
+  <section class="panel disclaimer">
+    <h2>请务必读一下</h2>
+    <ul>
+      <li><b>这是初筛工具，不是法律意见。</b>结果只说明「值得去查哪几条路」，不代表你一定能申请成功。</li>
+      <li><b>名单与门槛年年调整。</b>合资格大学名单按年度更新，配额与收入门槛也会变，<b>一切以入境处公布为准</b>。</li>
+      <li><b>警惕中介。</b>高才通与 IANG 都可以自己在网上递交。声称「包过」「内部名额」的一律高度警惕。</li>
+      <li><b>学历认证要趁早。</b>内地学历需经学信网出具认证报告，这一步耗时最久，建议最先启动。</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><a href="index.html">← 回到完整版：全球出国路径筛选</a></p>
+    <p>开源项目 · MIT License · 欢迎 PR 补充路径和纠错</p>
+    <p><a href="https://github.com/RadishXN/run-abroad" target="_blank" rel="noopener noreferrer">GitHub 仓库</a></p>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/hk-data.js"></script>
+<script src="js/hk.js"></script>
+</body>
+</html>
