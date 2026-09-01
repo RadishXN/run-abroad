@@ -3,9 +3,19 @@
 const sEsc = (s) => String(s ?? '').replace(/[&<>\"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const sMd = (s) => sEsc(s).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 const s$ = (s) => document.querySelector(s);
+const STUDENT_FIELD_LABELS = {
+  age: '年龄', education: '学历', language: '语言', stage: '适用阶段', offer: '前置条件',
+  proofOfFunds: '资金证明', tuition: '学费 / 课程费', visaFee: '签证费', projectFee: '项目费',
+  startup: '启动预算', monthlyLiving: '每月生活费', currency: '币种', preparation: '准备期',
+  processing: '审理 / 匹配期', duration: '身份 / 项目时长',
+};
+
+function studentFieldLabel(key) {
+  return STUDENT_FIELD_LABELS[key] || key;
+}
 
 function factsTable(groups) {
-  return `<dl class="facts student-detail-facts">${Object.entries(groups).filter(([,v]) => v).map(([k,v]) => `<div><dt>${sEsc(k)}</dt><dd>${sMd(v)}</dd></div>`).join('')}</dl>`;
+  return `<dl class="facts student-detail-facts">${Object.entries(groups).filter(([,v]) => v).map(([k,v]) => `<div><dt>${sEsc(studentFieldLabel(k))}</dt><dd>${sMd(v)}</dd></div>`).join('')}</dl>`;
 }
 function block(title, content, cls = '') {
   return `<section class="panel d-block student-detail-block ${cls}"><h2>${sEsc(title)}</h2>${content}</section>`;
