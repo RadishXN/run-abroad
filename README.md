@@ -165,6 +165,7 @@ run-abroad/
     ├── engine.js       主项目匹配引擎
     ├── app.js          主项目表单与结果渲染
     ├── student-data.js 学生专题独立数据（不污染主路径）
+    ├── student-guides.js 学生路径完整攻略（条件 / 费用 / 步骤 / FAQ）
     ├── student.js      学生专题问卷与分支匹配
     └── student-detail.js 学生路径详情渲染
 ```

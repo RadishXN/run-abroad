@@ -129,7 +129,7 @@ function studentCard(r) {
     <p class="student-summary-text">${studentMd(p.summary)}</p>
     <dl class="student-facts"><div><dt>预算提示</dt><dd>${studentMd(p.costs.startup)}</dd></div><div><dt>准备周期</dt><dd>${studentMd(p.timeline.preparation)}</dd></div><div><dt>工作边界</dt><dd>${studentMd(p.workRestrictions)}</dd></div></dl>
     ${gaps.length ? `<div class="gaps student-gaps"><b>${r.best.label}分支还差</b><ul>${gaps.map((g) => `<li>${studentMd(g)}</li>`).join('')}</ul></div>` : `<div class="gaps none">✓ 按当前答案没有明显缺口，仍需打开官网核对</div>`}
-    <div class="student-card-links"><a href="student-pathway.html?id=${encodeURIComponent(p.id)}">看详细条件与步骤 →</a><a href="${studentEsc(p.officialLinks[0].url)}" target="_blank" rel="noopener noreferrer">官方来源</a></div>
+    <div class="student-card-links"><a href="student-pathway.html?id=${encodeURIComponent(p.id)}">看完整攻略：条件、材料、步骤 →</a><a href="${studentEsc(p.officialLinks[0].url)}" target="_blank" rel="noopener noreferrer">官方来源</a></div>
     <small class="student-meta">最后整理：${studentEsc(p.verifiedAt)} · ${p.confidence === 'needs-confirmation' ? '部分信息待官方确认' : '建议再次核对官方页面'}</small>
   </article>`;
 }
