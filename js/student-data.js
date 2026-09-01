@@ -497,6 +497,191 @@ const STUDENT_SPECIALS = {
   'helpx-workaway': ['HelpX / Workaway 是平台，不发签证', '必须自行确认旅游或短期身份是否允许换宿', '需要书面确认任务、工时、住宿和休息日', '拒绝高额押金、签证费和保证名额话术'],
 };
 
+const STUDENT_DOCUMENT_DETAILS = {
+  'jp-language-school': [
+    { id: 'passport', name: '护照', required: true, detail: '有效期按日本使领馆要求；没有护照先到中国国家移民管理局办理。', action: '网上预约 → 现场采集信息 → 领取或邮寄', cost: '按国家移民管理局当前标准', validity: '通常 10 年 / 未成年人按规定' },
+    { id: 'education', name: '学历证书与成绩单', required: true, detail: '高中 / 中专及以上；在读生准备在读证明和成绩单。', action: '联系学校教务处开具盖章版本，按要求翻译或公证', cost: '按学校和公证处', validity: '学历长期有效，具体材料按学校要求' },
+    { id: 'funds', name: '资金证明与资助关系', required: true, detail: '本人或父母可作为资金来源；目标页列约 3–5 万元等值存款参考。', action: '提前准备流水和存款证明，避免临时大额进账', cost: '银行开具费按网点', validity: '按学校 / 入管要求' },
+    { id: 'japanese', name: '日语 N5 或学习时数证明', required: true, detail: '部分学校接受约 150 小时学习证明；具体标准逐校确认。', action: '国内学习并取得学校认可的证明或参加考试', cost: '按课程 / 考试', validity: '按学校要求' },
+    { id: 'reason', name: '就学理由书 / 学习计划', required: true, detail: '解释为什么选日本、为什么选该校、毕业后的真实计划。', action: '自己撰写，避免套用与经历不符的模板', cost: '自行准备', validity: '随本次申请' },
+    { id: 'insurance', name: '保险与入境后手续', required: false, detail: '入境后办理住民登记、国民健康保险和资格外活动许可。', action: '按市区町村和学校入学安排办理', cost: '按当地制度', validity: '按身份有效期' },
+  ],
+  'ca-coop': [
+    { id: 'passport', name: '护照', required: true, detail: '按 IRCC 和签证中心要求准备有效证件。', action: '检查有效期和空白页', cost: '按办证标准', validity: '覆盖计划停留' },
+    { id: 'offer', name: 'DLI 学校录取与课程说明', required: true, detail: '录取信必须对应具体学校、课程、学制和 Co-op 安排。', action: '向学校索要课程和实习结构的书面说明', cost: '按学校申请费', validity: '以录取信为准' },
+    { id: 'study-plan', name: '学习计划', required: true, detail: '解释课程与已有教育 / 工作背景的关联，不要把宣传话术当个人理由。', action: '按自己的经历写出学习目标和资金来源', cost: '自行准备', validity: '随申请' },
+    { id: 'funds', name: '学费与生活费资金证明', required: true, detail: '需要覆盖学费、生活费、交通和其他支出；父母资助要有关系材料。', action: '整理银行流水、存款和资助声明', cost: '按银行 / 翻译', validity: '以 IRCC 要求为准' },
+    { id: 'language', name: '语言成绩', required: true, detail: '页面常见学院项目 IELTS 6.0 左右，实际按学校和课程。', action: '在付款前确认学校接受的考试和最低单项', cost: '按考试机构', validity: '按考试有效期' },
+    { id: 'medical', name: '体检与生物识别', required: true, detail: '按 IRCC 通知到指定医生体检并采集生物识别。', action: '收到要求后预约，不要用旧体检替代新要求', cost: '按指定机构', validity: '按 IRCC 规则' },
+  ],
+  'de-ausbildung': [
+    { id: 'passport', name: '护照', required: true, detail: '覆盖签证和培训计划期间。', action: '检查有效期和空白页', cost: '按办证标准', validity: '覆盖停留' },
+    { id: 'contract', name: 'Ausbildungsvertrag 培训合同', required: true, detail: '必须由德国企业出具，写清职业、地点、津贴、开始日期和期限。', action: '通过官方岗位渠道申请并保存正式合同', cost: '正规岗位不应收“合同费”', validity: '以合同为准' },
+    { id: 'german', name: '德语证书', required: true, detail: 'B1 是常见起点，护理等岗位可能看 B2；由使领馆和企业分别审核。', action: '准备歌德、telc、ÖSD 等被接受的证明', cost: '按考试机构', validity: '按证书和机构要求' },
+    { id: 'education', name: '学历与成绩材料', required: true, detail: '高中 / 职业学历、成绩单和翻译认证按岗位及使领馆要求。', action: '先查 anabin / 使馆要求再做认证', cost: '按认证和翻译', validity: '按机构要求' },
+    { id: 'funds', name: '生活费 / 资金证明', required: true, detail: '培训津贴不够覆盖生活费时，签证阶段可能要求补充资金。', action: '把津贴、住宿和每月支出做成预算表', cost: '按银行 / 封锁账户', validity: '按签证要求' },
+    { id: 'insurance', name: '医疗保险与住宿', required: true, detail: '入境前后保险类型可能不同，住宿地址也会影响落地登记。', action: '向企业确认宿舍，按签证要求购买保险', cost: '按保险和房源', validity: '覆盖停留' },
+  ],
+  'au-whv-462': [
+    { id: 'passport', name: '中国大陆护照', required: true, detail: '需满足澳洲内政部关于有效期和国籍的要求。', action: '检查护照并注册 ImmiAccount', cost: '按办证标准', validity: '覆盖申请' },
+    { id: 'english', name: '英语证明', required: true, detail: '目标页列 IELTS 4.5 / PTE 30 / TOEFL iBT 32 等示例，必须以当年官方认可清单为准。', action: '报名官方认可考试并保存成绩报告', cost: '按考试机构', validity: '按签证规则' },
+    { id: 'education', name: '学历 / 学习证明', required: true, detail: '学历层级和在读课程要求需按中国申请人当年规则。', action: '准备毕业证、成绩单或完成课程证明', cost: '按翻译认证', validity: '按申请要求' },
+    { id: 'funds', name: '资金证明', required: true, detail: '目标页以约 AUD 5,000 作参考，不含全年生活成本。', action: '准备流水和余额证明，避免临时大额转入', cost: '按银行', validity: '按官方要求' },
+    { id: 'health-character', name: '体检与品格材料', required: true, detail: '按移民局通知完成体检，必要时提交无犯罪记录。', action: '收到通知后预约指定机构', cost: '按指定机构', validity: '按通知' },
+    { id: 'invitation', name: 'EOI / 抽签邀请与正式回执', required: true, detail: '预申请、抽签和正式签证申请是不同步骤。', action: '把邀请期限和正式申请期限分别记日历', cost: '按当年费用', validity: '严格按邀请期限' },
+  ],
+  'nz-whv': [
+    { id: 'passport', name: '护照', required: true, detail: '按新西兰移民局要求准备。', action: '提前注册账户并核对证件', cost: '按办证标准', validity: '按签证要求' },
+    { id: 'funds', name: '资金证明', required: true, detail: '目标页列 NZD 4,200 参考值，实际以当年规则。', action: '准备余额、流水和返程安排', cost: '按银行', validity: '按官方要求' },
+    { id: 'english', name: '英语材料', required: true, detail: '页面列 IELTS 5.5 参考值，必须核对当年认可考试。', action: '提前取得有效成绩', cost: '按考试机构', validity: '按签证规则' },
+    { id: 'health', name: '健康与品格材料', required: true, detail: '体检、无犯罪等材料按官方通知。', action: '名额确认后尽快办理', cost: '按指定机构', validity: '按通知' },
+    { id: 'application', name: '在线申请与付款记录', required: true, detail: '名额、正式申请和费用节点要保存截图与回执。', action: '开放日不要边查材料边填表', cost: '按当年签证费', validity: '按申请' },
+  ],
+  'ie-whv': [
+    { id: 'passport', name: '护照', required: true, detail: '覆盖整个计划停留期。', action: '检查有效期', cost: '按办证标准', validity: '按官方要求' },
+    { id: 'education', name: '学历 / 在读证明', required: true, detail: '目标页列大专及以上或完成本科两年，资格以年度公告。', action: '准备中英文材料', cost: '按翻译认证', validity: '按公告' },
+    { id: 'english', name: '英语证明（如要求）', required: true, detail: '按当年申请公告确认是否必须及接受的考试。', action: '不要用旧年份经验替代公告', cost: '按考试机构', validity: '按规则' },
+    { id: 'funds', name: '资金证明', required: true, detail: '目标页列约 EUR 3,000 参考，不等于都柏林全年生活费。', action: '准备余额、流水和住宿计划', cost: '按银行', validity: '按公告' },
+    { id: 'insurance', name: '保险与品格材料', required: true, detail: '按使领馆和爱尔兰官方要求准备。', action: '核对保额和覆盖期', cost: '按保险', validity: '覆盖停留' },
+  ],
+  'au-vet': [
+    { id: 'course', name: 'CRICOS 课程与学校录取', required: true, detail: '不能只看 TAFE 品牌，必须核对具体课程代码、学制和校区。', action: '向学校索要课程书面说明', cost: '按学校申请', validity: '以录取为准' },
+    { id: 'study-plan', name: '真实学习计划', required: true, detail: '解释课程与背景、职业目标和资金来源的关系。', action: '自己写，避免“移民专业”模板', cost: '自行准备', validity: '随申请' },
+    { id: 'language', name: '学校接受的语言成绩', required: true, detail: '按课程和学校要求，不能用泛泛的 IELTS 数字代替。', action: '先向学校确认单项和有效期', cost: '按考试机构', validity: '按考试要求' },
+    { id: 'funds', name: '学费与生活费资金', required: true, detail: '学签需要证明支付能力，和最终总成本分开算。', action: '拆出学费、保险、机票、住宿和生活费', cost: '按银行 / 资助材料', validity: '按签证要求' },
+    { id: 'visa', name: '学生签证材料', required: true, detail: '按澳洲内政部 Student 500 当年清单。', action: '逐项核对健康、保险和品格要求', cost: '按官方费用', validity: '按签证' },
+  ],
+  'us-j1-itp': [
+    { id: 'passport', name: '护照', required: true, detail: '覆盖项目期和离境缓冲期。', action: '检查有效期', cost: '按办证标准', validity: '覆盖计划' },
+    { id: 'resume', name: '英文简历、成绩单与推荐信', required: true, detail: 'Intern / Trainee 分支所需材料不同，按 sponsor 清单。', action: '准备能核验的项目和经验', cost: '自行准备 / 翻译', validity: '随申请' },
+    { id: 'sponsor', name: '国务院指定 sponsor', required: true, detail: '未被指定的机构不能签发合规项目文件。', action: '在 j1visa.gov 上核验项目和机构', cost: '机构费差异很大', validity: '按项目' },
+    { id: 'host', name: 'Host Company offer 与 DS-7002', required: true, detail: 'Training Plan 需要写清目标、阶段和岗位边界。', action: '确认 host、岗位和 sponsor 三方信息一致', cost: '按雇主 / sponsor', validity: '覆盖项目' },
+    { id: 'ds2019', name: 'DS-2019、SEVIS、DS-160', required: true, detail: '取得 sponsor 文件后才能完成签证流程。', action: '缴费、填写、预约面签并保存回执', cost: '按官方费用', validity: '按项目' },
+    { id: 'insurance', name: 'J-1 合规保险', required: true, detail: '保险需符合国务院交流访问者项目标准。', action: '确认是否已包含在 sponsor 项目费', cost: '按项目', validity: '覆盖全程' },
+  ],
+  'nl-aupair': [
+    { id: 'passport', name: '护照', required: true, detail: '覆盖互惠生居留期。', action: '检查有效期', cost: '按办证标准', validity: '按官方要求' },
+    { id: 'agency', name: 'IND 认可 Au Pair 机构', required: true, detail: '个人不能绕过认可机构直接申请。', action: '在 IND 名单核验机构', cost: '机构费用按合同', validity: '按项目' },
+    { id: 'host', name: 'Host family 与协议', required: true, detail: '家庭收入、住房和安排需要通过审核。', action: '视频沟通并写清孩子、家务、工时和休息', cost: '按协议', validity: '覆盖安排' },
+    { id: 'character', name: '无犯罪与健康材料', required: true, detail: '按荷兰官方和机构要求翻译 / 公证。', action: '留意材料有效期', cost: '按当地机构', validity: '按要求' },
+    { id: 'insurance', name: '医疗保险与 MVV / 居留材料', required: true, detail: 'MVV 和居留卡流程由认可机构协助。', action: '确认覆盖期和领取方式', cost: '按保险 / 签证', validity: '覆盖停留' },
+  ],
+  'ship-crew': [
+    { id: 'passport', name: '护照', required: true, detail: '按船公司和目的地要求。', action: '检查有效期', cost: '按办证标准', validity: '按合同' },
+    { id: 'medical', name: '海员体检', required: true, detail: '需到海事主管部门认可的机构检查。', action: '先确认检查项目和有效期', cost: '按指定机构', validity: '按证书' },
+    { id: 'training', name: 'B01–B04 安全培训', required: true, detail: '完成基础安全培训并取得相应证明。', action: '确认培训机构资质和退费条款', cost: '目标页列约 5,000 元估算', validity: '按证书' },
+    { id: 'seafarer', name: '海员证与服务簿', required: true, detail: '证件与船旗国、岗位和靠港规则分开核对。', action: '通过正规海事渠道办理', cost: '按主管部门', validity: '按证件' },
+    { id: 'contract', name: '船公司正式合同', required: true, detail: '写清薪资、保险、工伤、遣返、上船地点和轮休。', action: '拒绝只给口头承诺的派遣', cost: '警惕高额押金', validity: '覆盖合同' },
+  ],
+  'georgia-long-stay': [
+    { id: 'passport', name: '有效护照', required: true, detail: '免签或具体签证的有效期按官方。', action: '核对当前入境政策', cost: '按办证标准', validity: '按入境规则' },
+    { id: 'stay', name: '合法停留凭证', required: true, detail: '免签、旅游签和居留许可不是同一件事。', action: '保存入境记录和离境日期', cost: '按具体身份', validity: '按许可' },
+    { id: 'funds', name: '住宿、资金和保险', required: true, detail: '目标页的生活费是估算，不是官方资金门槛。', action: '准备首周住宿和应急撤离资金', cost: '按个人计划', validity: '覆盖停留' },
+  ],
+  'thailand-long-stay': [
+    { id: 'passport', name: '有效护照', required: true, detail: '按免签、旅游签、DTV 或教育签分别核对。', action: '先确定身份类别', cost: '按办证标准', validity: '按规则' },
+    { id: 'visa', name: '对应签证材料', required: true, detail: '免签、旅游签和长期签证材料完全不同。', action: '只使用 Thai e-Visa 或使馆官方清单', cost: '按类别', validity: '按签证' },
+    { id: 'funds', name: '资金 / 收入 / 住宿材料', required: true, detail: '按具体身份可能需要存款、收入、保险或住宿证明。', action: '不要把慢旅居预算当签证门槛', cost: '按类别', validity: '按要求' },
+  ],
+  'wwoof-global': [
+    { id: 'passport', name: '护照', required: true, detail: '有效期和空白页按目标国入境规则。', action: '提前办理并检查有效期', cost: '按办证标准', validity: '按目标国' },
+    { id: 'visa', name: '目的国合法入境身份', required: true, detail: 'WWOOF 不发签证；旅游 / 短期身份是否允许换宿要逐国核实。', action: '先查官方签证和工作 / 志愿规则', cost: '按目标国', validity: '按停留许可' },
+    { id: 'membership', name: '对应国家 WWOOF 会员', required: true, detail: '会员费由各国分会设置，平台本身不保证 host。', action: '在 wwoof.net 进入目标国家分会', cost: '目标页列约 200–400 元 / 年估算', validity: '按分会' },
+    { id: 'host', name: 'Host 沟通与书面约定', required: true, detail: '写清劳动内容、每天时长、食宿、Wi‑Fi、饮食和地址。', action: '先视频沟通，保存消息和评价截图', cost: '通常无额外平台费', validity: '覆盖项目' },
+    { id: 'insurance', name: '旅行医疗保险', required: true, detail: '农场劳动可能有户外和工具风险，保险还要确认是否覆盖相关活动。', action: '购买前看除外责任', cost: '按保险产品', validity: '覆盖全程' },
+    { id: 'emergency', name: '返程与应急退出资金', required: true, detail: '不要把免费食宿当作安全保障；要能独立离开 host。', action: '准备住宿、交通、改签和联系家人的方案', cost: '按目的地', validity: '覆盖项目' },
+  ],
+  'helpx-workaway': [
+    { id: 'passport', name: '护照与合法入境凭证', required: true, detail: '平台不发签证，先查目标国是否允许换宿。', action: '核对签证和停留期限', cost: '按目标国', validity: '按规则' },
+    { id: 'membership', name: '平台会员', required: true, detail: 'HelpX / Workaway 各自收费，价格以官网为准。', action: '只通过平台官方页面注册', cost: '按平台当前价格', validity: '按会员期' },
+    { id: 'host', name: 'Host 资料与协议', required: true, detail: '任务、时长、休息日、住宿、网络和饮食要先讲清。', action: '读评价并视频沟通', cost: '按约定', validity: '覆盖项目' },
+    { id: 'insurance', name: '保险与应急金', required: true, detail: '平台评价不替代保险和个人安全判断。', action: '准备随时离开的钱', cost: '按保险和交通', validity: '覆盖停留' },
+  ],
+};
+
+const STUDENT_TIMELINE_DETAILS = {
+  'jp-language-school': [
+    { title: '国内准备', duration: '约 3–6 个月', tasks: ['学到 N5 或完成学习时数', '选学校和入学期', '准备学历、资金和就学理由'] },
+    { title: '学校与 COE', duration: '约 1–2 个月', tasks: ['提交学校申请', '由学校向入管申请在留资格认定证明书', '根据要求补件'] },
+    { title: '签证与出发', duration: '约 2–4 周', tasks: ['拿 COE 后申请签证', '安排住宿和机票', '入境后办理在留卡与资格外活动许可'] },
+    { title: '在日学习', duration: '最长约 2 年', tasks: ['保持出勤', '合法兼职', '升学或转工作身份'] },
+  ],
+  'ca-coop': [
+    { title: '选校与课程核验', duration: '2–4 个月', tasks: ['确认 DLI', '核对 Co-op 是否为课程组成', '单独检查 PGWP 资格'] },
+    { title: '学签申请', duration: '按 IRCC 审理', tasks: ['准备学习计划和资金', '递交学签', '完成生物识别与体检（如要求）'] },
+    { title: '学习与实习', duration: '按课程', tasks: ['遵守学习和工作时数', '按 Co-op 条件完成实习', '保存学校和雇佣记录'] },
+    { title: '毕业后', duration: '毕业前重新核对', tasks: ['确认 PGWP 资格', '申请工作许可（如符合）', '再研究 CEC / 省提名'] },
+  ],
+  'de-ausbildung': [
+    { title: '语言准备', duration: '约 8–14 个月', tasks: ['从零基础学到 B1 / B2', '确定护理、机电、酒店等方向', '准备德语简历'] },
+    { title: '寻找培训岗位', duration: '约 2–6 个月', tasks: ['在联邦劳工局职位库搜索', '投递并参加面试', '签订培训合同'] },
+    { title: '签证准备', duration: '约 1–3 个月', tasks: ['学历与材料认证', '准备保险和住宿', '递交培训签证'] },
+    { title: '双元制培训', duration: '约 2–3.5 年', tasks: ['企业实践与职业学校并行', '领取培训津贴', '结业后规划工作身份'] },
+  ],
+  'au-whv-462': [
+    { title: '准备期', duration: '提前 6–12 个月', tasks: ['英语和学历材料', '护照与资金', '注册 ImmiAccount'] },
+    { title: 'EOI / 抽签窗口', duration: '按当年公告', tasks: ['提交预申请', '等待邀请', '记录正式申请期限'] },
+    { title: '正式申请', duration: '获邀后按期限', tasks: ['递交材料和费用', '完成体检', '等待审理或补件'] },
+    { title: '落地工作', duration: '首次通常 12 个月', tasks: ['申请 TFN', '在许可范围内工作', '如续签保存指定工作证据'] },
+  ],
+  'nz-whv': [
+    { title: '准备账户与材料', duration: '提前数周', tasks: ['护照、英语和资金', '注册官方账户', '准备可快速粘贴的信息'] },
+    { title: '开放日申请', duration: '当天窗口', tasks: ['按新西兰时间提交', '支付申请费', '保存确认邮件'] },
+    { title: '体检与审理', duration: '约数周至数月', tasks: ['补充材料', '完成体检', '等待结果'] },
+    { title: '入境与工作', duration: '通常 12 个月', tasks: ['办理税号和银行', '按季节寻找工作', '按官方规则研究延期'] },
+  ],
+  'ie-whv': [
+    { title: '准备', duration: '约 2–3 个月', tasks: ['英语、学历和护照', '资金、保险和无犯罪材料', '关注年度窗口'] },
+    { title: '递交', duration: '按官方窗口', tasks: ['提交申请', '按通知面签或补件', '取得 authorisation'] },
+    { title: '落地', duration: '前 1–2 周', tasks: ['安排住宿', '办理登记和 PPS', '寻找合法工作'] },
+    { title: '到期前规划', duration: '提前数月', tasks: ['确认 Employment Permit 条件', '不要等 WHA 到期后再处理'] },
+  ],
+  'au-vet': [
+    { title: '确定职业方向', duration: '数周至数月', tasks: ['比较具体 CRICOS 课程', '问清实习、工作权和学制', '计算全年成本'] },
+    { title: '学校申请', duration: '按学校', tasks: ['准备学历、语言和成绩', '取得录取', '核对课程真实性'] },
+    { title: '学生签证', duration: '按官方审理', tasks: ['准备学习计划和资金', '购买保险', '递交 Student 500'] },
+    { title: '毕业前复核', duration: '毕业前', tasks: ['再次检查毕业后工作权', '核对职业清单和政策', '不要把课程宣传当身份承诺'] },
+  ],
+  'us-j1-itp': [
+    { title: '判断分支', duration: '前期', tasks: ['确认 Intern / Trainee', '准备简历和经验材料', '确定专业相关方向'] },
+    { title: 'Sponsor + Host', duration: '约 2–4 个月', tasks: ['核验 sponsor', '寻找 host', '完成 DS-7002'] },
+    { title: '签证', duration: '约 1–2 个月', tasks: ['取得 DS-2019', '缴 SEVIS、填 DS-160', '参加面签'] },
+    { title: '项目期间', duration: '12–18 个月按分支', tasks: ['只在 Training Plan 范围工作', '联系 sponsor 报到', '提前规划结束后的身份'] },
+  ],
+  'nl-aupair': [
+    { title: '匹配家庭', duration: '约 1–3 个月', tasks: ['查 IND 认可机构', '提交资料', '和 host 视频面试'] },
+    { title: '申请居留', duration: '约 2–4 周', tasks: ['签 Au Pair 协议', '由机构递交 IND', '等待 MVV / 居留安排'] },
+    { title: '出发与登记', duration: '约 2–3 周', tasks: ['买保险和机票', '到达后 BRP 登记', '领取居留卡和了解家庭安排'] },
+    { title: '互惠期间', duration: '通常 12 个月', tasks: ['遵守每天 / 每周工时', '保留休息时间', '提前规划到期后的离境或转身份'] },
+  ],
+  'ship-crew': [
+    { title: '培训与体检', duration: '约 1–2 个月', tasks: ['海员体检', '完成安全培训', '办理海员证和服务簿'] },
+    { title: '寻找船位', duration: '约 1–3 个月', tasks: ['核验船公司 / 派遣机构', '参加招聘', '取得正式合同'] },
+    { title: '上船工作', duration: '约 6–9 个月合同', tasks: ['核对船旗国和靠港规则', '按合同工作', '保存工资和保险记录'] },
+  ],
+  'georgia-long-stay': [
+    { title: '行前核验', duration: '约 1–2 周', tasks: ['查当前护照入境规则', '准备保险和返程方案', '预订首周住宿'] },
+    { title: '到达落脚', duration: '第 1 周', tasks: ['办理通信和交通', '找长期房源', '确认当地服务'] },
+    { title: '后续身份', duration: '按个人计划', tasks: ['需要工作 / 学习时另行申请许可', '不要把免签当工作权'] },
+  ],
+  'thailand-long-stay': [
+    { title: '选择身份', duration: '出发前', tasks: ['区分免签、旅游签、DTV、教育签', '核对当年停留期限', '计算保险和应急金'] },
+    { title: '申请或入境', duration: '数天至数周', tasks: ['使用官方 e-Visa / 使馆渠道', '保存入境记录', '遵守停留期限'] },
+    { title: '落地生活', duration: '按停留许可', tasks: ['签正规租约', '确认工作权', '到期前决定离境或换合法身份'] },
+  ],
+  'wwoof-global': [
+    { title: '先查法律身份', duration: '1–2 周', tasks: ['选国家', '确认旅游 / 短期身份是否允许换宿', '注册对应 WWOOF 分会'] },
+    { title: '联系 Host', duration: '2–4 周', tasks: ['阅读评价', '视频沟通', '书面确认任务、时长和食宿'] },
+    { title: '出发准备', duration: '2–4 周', tasks: ['办理签证（如需）', '购买保险', '准备返程与退出资金'] },
+    { title: '项目期间', duration: '每个 Host 约 1–4 周', tasks: ['按约定参与', '记录工作和住宿情况', '不合适时退出并联系平台'] },
+  ],
+  'helpx-workaway': [
+    { title: '选择平台和目的地', duration: '1–2 周', tasks: ['比较 HelpX 与 Workaway', '先查目的国身份', '注册官方会员'] },
+    { title: '联系 Host', duration: '1–3 周', tasks: ['读评价', '确认任务和时长', '确认住宿、Wi‑Fi、饮食和休息'] },
+    { title: '出发', duration: '2–4 周', tasks: ['办理合法身份', '购买保险和机票', '把地址告诉家人'] },
+  ],
+};
+
 function validateStudentData() {
   const problems = [];
   const ids = new Set();

@@ -1185,3 +1185,49 @@ footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
 
 .hk-uncertain li { margin-bottom: var(--s4); }
 .hk-uncertain b { color: var(--ink); }
+
+/* ── 学生攻略完整版：阶段进度与逐项材料 ── */
+.student-guide-intro { margin: var(--s4) 0 0; padding: var(--s4) var(--s5); background: var(--accent-wash); border-left: 2px solid var(--accent); font-size: 14px; line-height: 1.8; color: var(--ink-soft); }
+.student-age-callout { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s4); margin-bottom: var(--s5); padding: var(--s4) var(--s5); background: var(--accent-wash); border-radius: var(--r-md); }
+.student-age-callout span { font-size: 12px; color: var(--muted); }
+.student-age-callout strong { font-family: var(--serif); font-size: 19px; font-weight: 600; color: var(--accent-ink); }
+.student-special-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); }
+.student-special { display: flex; gap: var(--s3); align-items: flex-start; padding: var(--s4); background: var(--bg-tint); border-radius: var(--r-md); }
+.student-special > span { flex: none; font-family: var(--serif); font-size: 13px; color: var(--accent); opacity: .7; }
+.student-special p { margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--ink-soft); }
+.student-timeline { position: relative; margin-top: var(--s5); }
+.student-timeline::before { content: ''; position: absolute; left: 16px; top: 18px; bottom: 18px; border-left: 1px solid var(--line); }
+.student-timeline-step { position: relative; display: grid; grid-template-columns: 34px 1fr; gap: var(--s4); padding-bottom: var(--s6); }
+.student-timeline-step:last-child { padding-bottom: 0; }
+.student-timeline-mark { position: relative; z-index: 1; width: 34px; height: 34px; display: grid; place-items: center; font-family: var(--serif); font-size: 12px; font-weight: 600; color: var(--accent); background: var(--accent-wash); border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line)); border-radius: 50%; }
+.student-timeline-title { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s4); border-bottom: 1px solid var(--hair); padding-bottom: var(--s2); }
+.student-timeline-title h3 { margin: 0; font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--ink); }
+.student-timeline-title span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.student-timeline-step .d-list { margin: var(--s3) 0 0; font-size: 13.5px; color: var(--ink-soft); }
+.student-progress { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--hair); }
+.student-progress-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s4); font-size: 13px; color: var(--muted); }
+.student-progress-head strong { color: var(--ink); font-weight: 600; }
+.student-progress-head span { font-size: 12px; }
+.student-progress-head b { color: var(--accent); font-variant-numeric: tabular-nums; }
+.student-progress-track { height: 7px; margin-top: var(--s3); overflow: hidden; background: var(--bg-tint); border-radius: 999px; }
+.student-progress-track span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: inherit; transition: width .25s ease; }
+.student-checklist { margin-top: var(--s4); }
+.student-checklist label { display: flex; align-items: flex-start; gap: var(--s3); padding: var(--s3) var(--s2); border-bottom: 1px solid var(--hair); cursor: pointer; }
+.student-checklist label:last-child { border-bottom: 0; }
+.student-checklist input { flex: none; width: 16px; height: 16px; margin-top: 3px; accent-color: var(--accent); }
+.student-checklist label > span { display: grid; grid-template-columns: 28px 1fr; gap: 0 var(--s2); align-items: baseline; width: 100%; }
+.student-checklist label > span > b { grid-row: span 3; font-family: var(--serif); font-weight: 600; color: var(--accent); opacity: .65; }
+.student-checklist label strong { font-size: 14px; font-weight: 600; color: var(--ink-soft); }
+.student-checklist label small, .student-checklist label em { grid-column: 2; font-style: normal; font-size: 12px; line-height: 1.55; color: var(--muted); }
+.student-checklist label em { color: var(--faint); }
+.student-checklist input:checked + span strong { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+
+@media (max-width: 620px) {
+  .student-special-grid { grid-template-columns: 1fr; }
+  .student-age-callout { display: block; }
+  .student-age-callout strong { display: block; margin-top: var(--s1); }
+  .student-timeline-title { display: block; }
+  .student-timeline-title span { display: block; margin-top: var(--s1); }
+  .student-progress-head { display: block; }
+  .student-progress-head span { display: block; margin-top: var(--s1); }
+}

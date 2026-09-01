@@ -33,8 +33,39 @@ function specialRequirements(p) {
   return `<div class="student-special-grid">${(STUDENT_SPECIALS[p.id] || []).map((x, i) => `<div class="student-special"><span>${String(i + 1).padStart(2, '0')}</span><p>${sMd(x)}</p></div>`).join('')}</div>`;
 }
 
-function checklist(items) {
-  return `<div class="student-checklist">${items.map((x, i) => `<label><input type="checkbox"><span><b>${String(i + 1).padStart(2, '0')}</b>${sMd(x)}</span></label>`).join('')}</div>`;
+function checklist(items, pathId) {
+  const saved = JSON.parse(sessionStorage.getItem(`student-docs:${pathId}`) || '{}');
+  return `<div class="student-progress" data-progress="${sEsc(pathId)}">
+    <div class="student-progress-head"><strong>材料准备进度</strong><span><b data-progress-count>0</b> / ${items.length} 已完成 · <b data-progress-percent>0%</b></span></div>
+    <div class="student-progress-track"><span data-progress-bar></span></div>
+    <div class="student-checklist">${items.map((x, i) => `<label><input type="checkbox" data-doc-check="${sEsc(x.id)}" ${saved[x.id] ? 'checked' : ''}><span><b>${String(i + 1).padStart(2, '0')}</b><strong>${sEsc(x.name)}</strong><small>${sMd(x.detail)}</small><em>准备：${sMd(x.action)} · 费用：${sMd(x.cost)} · 有效期：${sMd(x.validity)}</em></span></label>`).join('')}</div>
+  </div>`;
+}
+
+function documentCards(pathId, fallback) {
+  const items = STUDENT_DOCUMENT_DETAILS[pathId] || (fallback || []).map((name, i) => ({ id: `doc-${i}`, name, detail: '按官方清单核对。', action: '查看官方要求', cost: '待核实', validity: '按官方要求' }));
+  return { items, html: checklist(items, pathId) };
+}
+
+function timelineCards(pathId, fallback) {
+  const rows = STUDENT_TIMELINE_DETAILS[pathId] || (fallback || []).map((x, i) => ({ title: `阶段 ${i + 1}`, duration: '按官方或机构', tasks: [x] }));
+  return `<div class="student-timeline">${rows.map((x, i) => `<article class="student-timeline-step"><div class="student-timeline-mark">${String(i + 1).padStart(2, '0')}</div><div><div class="student-timeline-title"><h3>${sEsc(x.title)}</h3><span>${sEsc(x.duration)}</span></div><ul class="d-list">${x.tasks.map(t => `<li>${sMd(t)}</li>`).join('')}</ul></div></article>`).join('')}</div>`;
+}
+
+function wireChecklist(pathId) {
+  const root = document.querySelector(`[data-progress="${CSS.escape(pathId)}"]`);
+  if (!root) return;
+  const checks = [...root.querySelectorAll('[data-doc-check]')];
+  const update = () => {
+    const done = checks.filter(x => x.checked).length;
+    const pct = checks.length ? Math.round(done / checks.length * 100) : 0;
+    root.querySelector('[data-progress-count]').textContent = done;
+    root.querySelector('[data-progress-percent]').textContent = `${pct}%`;
+    root.querySelector('[data-progress-bar]').style.width = `${pct}%`;
+    sessionStorage.setItem(`student-docs:${pathId}`, JSON.stringify(Object.fromEntries(checks.map(x => [x.dataset.docCheck, x.checked]))));
+  };
+  checks.forEach(x => x.addEventListener('change', update));
+  update();
 }
 
 function renderStudentDetail(p) {
@@ -46,6 +77,7 @@ function renderStudentDetail(p) {
 
   const branchHtml = p.branches.map(b => `<div class="student-branch"><h3>${sEsc(b.label)}</h3><ul class="d-list">${b.checks.map(c => `<li><span class="student-kind ${c.kind}">${c.kind === 'hard' ? '硬' : '软'}</span>${sMd(c.label)}：${sMd(c.gap)}</li>`).join('')}</ul></div>`).join('');
   const age = p.requirements?.age || '按具体项目与官方规则核对';
+  const docs = documentCards(p.id, guide.documents || p.documents);
   const links = [...(p.officialLinks || []).map(x => ({...x, kind:'官方'})), ...(p.secondaryLinks || []).map(x => ({...x, kind:'参考'}))];
 
   s$('#body').innerHTML = `
@@ -53,8 +85,8 @@ function renderStudentDetail(p) {
     ${studentSection('申请条件', `<div class="student-age-callout"><span>年龄窗口</span><strong>${sMd(age)}</strong></div>${guide.requirements ? list(guide.requirements) : ''}${factsTable(p.requirements)}<div class="student-branches">${branchHtml}</div>`) }
     ${studentSection('特殊要求', specialRequirements(p))}
     ${studentSection('费用清单', `${factsTable(p.costs)}${guide.costs ? list(guide.costs) : ''}`) }
-    ${studentSection('时间线', `${factsTable(p.timeline)}${guide.timeline ? list(guide.timeline, true) : p.steps?.length ? list(p.steps, true) : ''}`) }
-    ${studentSection('材料清单', checklist(guide.documents || p.documents || [])) }
+    ${studentSection('时间线', `${factsTable(p.timeline)}${timelineCards(p.id, guide.timeline)}`) }
+    ${studentSection('材料清单', docs.html) }
     ${studentSection('工作权限', `<div class="student-rights"><h3>可以做什么</h3><p>${sMd(guide.work || p.workRights)}</p><h3>不能做什么</h3><p>${sMd(p.workRestrictions)}</p></div>`) }
     ${studentSection('后续路径', `<p class="notes">${sMd(guide.next || p.followOn || '没有自动身份衔接，需要另行核对官方规则。')}</p>`) }
     ${guide.faq?.length ? studentSection('常见问题', guide.faq.map(([q,a]) => `<details class="student-faq"><summary>${sEsc(q)}</summary><p>${sMd(a)}</p></details>`).join('')) : ''}
@@ -74,4 +106,5 @@ function renderStudentDetail(p) {
     return;
   }
   renderStudentDetail(p);
+  wireChecklist(p.id);
 })();
