@@ -479,6 +479,24 @@ const STUDENT_PATHWAYS = [
   },
 ];
 
+/** 每条路径必须把“特殊要求”单独列出来，避免它被埋在长摘要里。 */
+const STUDENT_SPECIALS = {
+  'jp-language-school': ['学校录取与在留资格认定证明书（COE）', '日语 N5 或约 150 小时学习证明', '本人或父母的资金证明', '入境后另行申请资格外活动许可才能兼职'],
+  'ca-coop': ['必须选择 DLI 学校和符合条件的具体课程', 'Co-op 实习许可与 PGWP 资格需要分开核实', '学习计划需能解释课程与个人背景的关联', '资金证明要覆盖学费和生活费'],
+  'de-ausbildung': ['必须先拿到德国企业培训合同', '通常需要德语 B1，护理等岗位可能要求 B2', '培训津贴不足生活费时要补充资金证明', '培训合同不等于永久工作权'],
+  'au-whv-462': ['中国大陆申请人需按当年 EOI / 抽签窗口申请', '需要符合官方认可范围的英语证明', '通常一生一次，名额和申请窗口以当年公告为准', '二签 / 三签需要完成指定工作'],
+  'nz-whv': ['中国申请人年度名额有限，通常先到先得', '需要满足当年英语和资金证明要求', '不能接受永久工作 offer', '延期要满足指定工作条件'],
+  'ie-whv': ['中国申请资格、配额和窗口按年度公告', '需要保险和资金证明', 'WHA 不等于长期 Employment Permit', '到期前要另行规划身份'],
+  'au-vet': ['必须核对具体 CRICOS 课程而不是只看 TAFE 品牌', '课程、学生签和毕业后工作权是三个不同问题', '学习计划要与真实学习目的相符', '目标站没有独立 VET 页面，当前仅作官方核验线索'],
+  'us-j1-itp': ['Intern / Trainee 是不同分支，资格不能混用', '必须有国务院指定 sponsor、Host Company 和 Training Plan', '只能在 DS-7002 约定范围内工作', '需要向 sponsor 确认 212(e) 是否适用'],
+  'nl-aupair': ['必须通过 IND 认可的 Au Pair 机构', '必须匹配并通过审核的 host family', '通常 18–25 岁、未婚、无子女', '每日和每周家庭协助时间有上限'],
+  'ship-crew': ['需要海员体检和海事安全培训', '需要海员证、服务簿和正式合同', '船员证件不等于普通国家工作签证', '必须核验船公司或派遣机构资质'],
+  'georgia-long-stay': ['免签停留不等于工作许可', '长期工作或学习需要另行申请身份', '当前入境期限必须以格鲁吉亚官方公告为准'],
+  'thailand-long-stay': ['免签、旅游签、DTV、教育签的规则完全不同', '旅游身份不能在泰国本地合法工作', '停留期限和延期规则以当年官方公告为准'],
+  'wwoof-global': ['WWOOF 是平台，不是签证', '必须自行确认目的国是否允许换宿劳动', '需要与 host 书面确认工作时长和食宿', '户外劳动建议购买保险并准备退出资金'],
+  'helpx-workaway': ['HelpX / Workaway 是平台，不发签证', '必须自行确认旅游或短期身份是否允许换宿', '需要书面确认任务、工时、住宿和休息日', '拒绝高额押金、签证费和保证名额话术'],
+};
+
 function validateStudentData() {
   const problems = [];
   const ids = new Set();
@@ -497,6 +515,7 @@ function validateStudentData() {
       if (!/^https:\/\//.test(l.url)) problems.push(`${p.id} 链接不是 HTTPS: ${l.url}`);
     }
     if (!p.branches?.every((b) => b.id && b.checks?.length)) problems.push(`${p.id} 分支结构不完整`);
+    if (!STUDENT_SPECIALS[p.id]?.length) problems.push(`${p.id} 缺特殊要求`);
     for (const b of p.branches || []) {
       for (const c of b.checks || []) {
         if (!['hard', 'soft'].includes(c.kind)) problems.push(`${p.id}/${b.id} gate kind 无效`);

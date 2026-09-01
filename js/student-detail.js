@@ -25,6 +25,18 @@ function list(items, ordered = false) {
   return `<${tag} class="d-list student-detail-list">${(items || []).map(x => `<li>${sMd(x)}</li>`).join('')}</${tag}>`;
 }
 
+function studentSection(title, content, cls = '') {
+  return `<section class="panel d-block student-detail-block ${cls}"><h2>${sEsc(title)}</h2>${content}</section>`;
+}
+
+function specialRequirements(p) {
+  return `<div class="student-special-grid">${(STUDENT_SPECIALS[p.id] || []).map((x, i) => `<div class="student-special"><span>${String(i + 1).padStart(2, '0')}</span><p>${sMd(x)}</p></div>`).join('')}</div>`;
+}
+
+function checklist(items) {
+  return `<div class="student-checklist">${items.map((x, i) => `<label><input type="checkbox"><span><b>${String(i + 1).padStart(2, '0')}</b>${sMd(x)}</span></label>`).join('')}</div>`;
+}
+
 function renderStudentDetail(p) {
   document.title = `${p.title} · 大学生出国路径`;
   const type = STUDENT_TYPES[p.type];
@@ -33,25 +45,23 @@ function renderStudentDetail(p) {
   s$('#head').innerHTML = `<a class="back" href="student.html">← 返回学生专题</a><div class="d-title"><span class="d-flag">${p.flag}</span><div><p class="d-country">${sEsc(p.country)} · ${sEsc(p.officialName)}</p><h1>${sEsc(p.title)}</h1></div></div><div class="badges d-badges"><span class="badge">${sEsc(type)}</span><span class="badge">${sEsc(nature)}</span><span class="badge">最后核验 ${sEsc(p.verifiedAt)}</span></div>`;
 
   const branchHtml = p.branches.map(b => `<div class="student-branch"><h3>${sEsc(b.label)}</h3><ul class="d-list">${b.checks.map(c => `<li><span class="student-kind ${c.kind}">${c.kind === 'hard' ? '硬' : '软'}</span>${sMd(c.label)}：${sMd(c.gap)}</li>`).join('')}</ul></div>`).join('');
+  const age = p.requirements?.age || '按具体项目与官方规则核对';
   const links = [...(p.officialLinks || []).map(x => ({...x, kind:'官方'})), ...(p.secondaryLinks || []).map(x => ({...x, kind:'参考'}))];
 
   s$('#body').innerHTML = `
-    ${guide.intro ? block('先说清楚这条路', `<p class="notes">${sMd(guide.intro)}</p>`) : ''}
-    ${guide.requirements ? block('完整申请条件', list(guide.requirements)) : ''}
-    ${block('申请门槛', factsTable(p.requirements) + `<div class="student-branches">${branchHtml}</div>`) }
-    ${guide.costs ? block('费用拆开看', list(guide.costs)) : block('钱要怎么准备', factsTable(p.costs))}
-    ${block('时间与工作边界', factsTable(p.timeline) + `<div class="student-rights"><h3>可以做什么</h3><p>${sMd(p.workRights)}</p><h3>不能想当然做什么</h3><p>${sMd(p.workRestrictions)}</p></div>`) }
-    ${guide.timeline ? block('从准备到出发', list(guide.timeline, true)) : ''}
-    ${p.steps?.length ? block('申请步骤', list(p.steps, true)) : ''}
-    ${guide.documents ? block('材料清单（逐项核对）', list(guide.documents)) : p.documents?.length ? block('材料清单', list(p.documents)) : ''}
-    ${p.followOn ? block('之后怎么办', `<p class="notes">${sMd(p.followOn)}</p>`) : ''}
-    ${guide.next ? block('这条路的后续', `<p class="notes">${sMd(guide.next)}</p>`) : ''}
-    ${guide.work ? block('工作权限的真实边界', `<p class="notes">${sMd(guide.work)}</p>`) : ''}
-    ${guide.faq?.length ? block('常见问题', guide.faq.map(([q,a]) => `<details class="student-faq"><summary>${sEsc(q)}</summary><p>${sMd(a)}</p></details>`).join('')) : p.faq?.length ? block('常见问题', p.faq.map(x => `<details class="student-faq"><summary>${sEsc(x.q)}</summary><p>${sMd(x.a)}</p></details>`).join('')) : ''}
-    ${guide.tips ? block('实用提醒', list(guide.tips)) : ''}
-    ${guide.warnings ? block('需要特别小心', list(guide.warnings), 'd-warn') : p.pitfalls?.length ? block('容易踩的坑', list(p.pitfalls), 'd-warn') : ''}
-    ${block('官方与参考链接', `<ul class="d-links student-detail-links">${links.map(x => `<li><span class="student-link-kind">${x.kind}</span><a href="${sEsc(x.url)}" target="_blank" rel="noopener noreferrer">${sEsc(x.label)} →</a></li>`).join('')}</ul>`) }
-    ${block('资料说明', `<p class="notes">本条路径参考了公开路径资料的字段化整理，但参考资料不是官方来源。来源页最近更新：${sEsc(guide.sourceUpdated || '未标注')}。当前置信度：<strong>${sEsc(p.confidence)}</strong>。实际申请资格、费用、工作权和后续身份，请以链接中的官方页面为准。</p>`) }
+    ${studentSection('这条路是什么', `<p class="student-nature"><strong>${sEsc(nature)}</strong></p><p class="notes">${sMd(p.summary)}</p><p class="student-guide-intro">${sMd(guide.intro || '')}</p>`) }
+    ${studentSection('申请条件', `<div class="student-age-callout"><span>年龄窗口</span><strong>${sMd(age)}</strong></div>${guide.requirements ? list(guide.requirements) : ''}${factsTable(p.requirements)}<div class="student-branches">${branchHtml}</div>`) }
+    ${studentSection('特殊要求', specialRequirements(p))}
+    ${studentSection('费用清单', `${factsTable(p.costs)}${guide.costs ? list(guide.costs) : ''}`) }
+    ${studentSection('时间线', `${factsTable(p.timeline)}${guide.timeline ? list(guide.timeline, true) : p.steps?.length ? list(p.steps, true) : ''}`) }
+    ${studentSection('材料清单', checklist(guide.documents || p.documents || [])) }
+    ${studentSection('工作权限', `<div class="student-rights"><h3>可以做什么</h3><p>${sMd(guide.work || p.workRights)}</p><h3>不能做什么</h3><p>${sMd(p.workRestrictions)}</p></div>`) }
+    ${studentSection('后续路径', `<p class="notes">${sMd(guide.next || p.followOn || '没有自动身份衔接，需要另行核对官方规则。')}</p>`) }
+    ${guide.faq?.length ? studentSection('常见问题', guide.faq.map(([q,a]) => `<details class="student-faq"><summary>${sEsc(q)}</summary><p>${sMd(a)}</p></details>`).join('')) : ''}
+    ${guide.tips ? studentSection('实用提醒', list(guide.tips)) : ''}
+    ${guide.warnings ? studentSection('风险与避坑', list(guide.warnings), 'd-warn') : ''}
+    ${studentSection('官方与参考链接', `<ul class="d-links student-detail-links">${links.map(x => `<li><span class="student-link-kind">${x.kind}</span><a href="${sEsc(x.url)}" target="_blank" rel="noopener noreferrer">${sEsc(x.label)} →</a></li>`).join('')}</ul>`) }
+    ${studentSection('资料说明', `<p class="notes">本页把公开路径资料拆成条件、费用、时间线和材料清单重新整理。来源页最近更新：${sEsc(guide.sourceUpdated || '未标注')}。当前置信度：<strong>${sEsc(p.confidence)}</strong>。政策、名额、费用和工作权请以官方链接为准。</p>`) }
   `;
 }
 

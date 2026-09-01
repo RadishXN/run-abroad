@@ -1055,9 +1055,29 @@ footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
   .student-number { width: 100% !important; }
 }
 
-/* ============================================================
-   响应式与无障碍
-   ============================================================ */
+
+.student-guide-intro { margin: var(--s4) 0 0; padding-top: var(--s4); border-top: 1px solid var(--hair); font-size: 14px; color: var(--ink-soft); }
+.student-age-callout { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s4); margin-bottom: var(--s5); padding: var(--s4) var(--s5); background: var(--accent-wash); border-radius: var(--r-md); }
+.student-age-callout span { font-size: 12px; color: var(--muted); }
+.student-age-callout strong { font-family: var(--serif); font-size: 19px; font-weight: 600; color: var(--accent-ink); }
+.student-special-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s3); }
+.student-special { display: flex; gap: var(--s3); align-items: flex-start; padding: var(--s4); background: var(--bg-tint); border-radius: var(--r-md); }
+.student-special > span { flex: none; font-family: var(--serif); font-size: 13px; color: var(--accent); opacity: .7; }
+.student-special p { margin: 0; font-size: 13.5px; line-height: 1.65; color: var(--ink-soft); }
+.student-checklist { margin-top: var(--s5); padding-top: var(--s5); border-top: 1px solid var(--hair); }
+.student-checklist label { display: flex; align-items: flex-start; gap: var(--s3); padding: var(--s3) 0; cursor: pointer; }
+.student-checklist input { flex: none; width: 16px; height: 16px; margin-top: 3px; }
+.student-checklist label > span { display: flex; gap: var(--s3); align-items: baseline; font-size: 14px; color: var(--ink-soft); }
+.student-checklist label > span b { flex: none; font-family: var(--serif); font-weight: 600; color: var(--accent); opacity: .65; }
+.student-checklist input:checked + span { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+.student-checklist input:checked + span b { text-decoration: none; }
+
+@media (max-width: 620px) {
+  .student-special-grid { grid-template-columns: 1fr; }
+  .student-age-callout { display: block; }
+  .student-age-callout strong { display: block; margin-top: var(--s1); }
+}
+
 
 @media (max-width: 620px) {
   .wrap { padding: 0 var(--s4); }
