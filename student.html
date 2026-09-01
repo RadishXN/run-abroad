@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大学生出国路径 · 我适合哪一条？</title>
+<meta name="description" content="面向中国大陆大学生和应届毕业生的出国路径初筛：按年龄、阶段、语言、预算和意愿，看看哪些路径值得先查。">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="student-page">
+
+<header class="hero student-hero">
+  <div class="wrap">
+    <p class="student-kicker">学生版 · 独立专题</p>
+    <h1>还在读，也可以先看看<br>自己有哪些路</h1>
+    <p class="lead">回答几个问题，先把 <b id="pathwayCount">0</b> 条路径分清楚：<strong>哪些值得查，哪些还差一点</strong>。</p>
+    <p class="privacy">答案只在这台设备上计算 · 不上传、不注册、不预测成功率</p>
+    <p class="hero-alt"><a href="index.html">看完整版全球路径筛选 →</a><a href="nomad.html">数字游民专题 →</a><a href="hk.html">香港专题 →</a></p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel d-block student-intro">
+    <div class="student-intro-grid">
+      <div>
+        <span class="eyebrow">先把概念分开</span>
+        <h2>“出国”不是一种路径</h2>
+      </div>
+      <div class="prose">
+        <p>有人是想读书后留下，有人只是想在毕业前出去实习一段，有人更适合边学技能边工作。它们看起来都叫“出国”，实际需要的身份、预算和下一步完全不同。</p>
+        <p><strong>低成本也不等于零成本。</strong>学费、资金证明、机票、保险和落地后的生活费，往往是五笔不同的钱；学生签能打工，也不代表打工能覆盖学费；一个平台能帮你找到 host，也不代表它能给你工作许可。</p>
+        <p>这个专题不替你选国家，也不承诺“读完就能留下”。它只做一件更实际的事：把你现在的阶段、预算和边界，和每条路径的前置条件对上，先告诉你值得查什么、要补什么、哪些说法需要回到官网核实。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel d-block student-form-panel">
+    <div class="section-head"><div><span class="eyebrow">Student pathfinder</span><h2>先填你的现在</h2></div><span class="section-note">必答项填完就会实时出结果</span></div>
+    <div id="quiz" class="student-quiz"></div>
+  </section>
+
+  <section id="results" hidden aria-live="polite"></section>
+
+  <section class="panel d-block">
+    <div class="section-head"><div><span class="eyebrow">一眼比较</span><h2>这些路径分别是什么</h2></div><span class="section-note">平台、项目和签证，不要混为一谈</span></div>
+    <div class="table-scroll"><table class="cmp student-cmp" id="comparison"></table></div>
+  </section>
+
+  <section class="panel d-block student-method">
+    <div class="student-intro-grid">
+      <div><span class="eyebrow">How to read this</span><h2>这份结果怎么读</h2></div>
+      <div class="prose">
+        <p><strong>值得先查</strong>不等于“已经获批”，只表示按你填写的信息，没有发现明显硬门槛。<strong>补一两项</strong>通常意味着还缺录取、语言、资金、sponsor 或合同。</p>
+        <p>排序代表“值得优先研究的程度”，不是成功率。目标站的内容只作为路径线索，本专题会独立重写字段，最终资格、金额、名额和工作权限以官方来源为准。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel disclaimer">
+    <h2>请务必读一下</h2>
+    <ul>
+      <li><b>这不是留学中介，也不是移民法律意见。</b>“值得查”不等于“符合”，更不等于“会获批”。</li>
+      <li><b>学生身份下的工作权限很窄。</b>旅游、免签、换宿和志愿平台都不能自动授予工作许可。</li>
+      <li><b>低成本不是零成本。</b>每条路径的学费、资金证明、生活费、保险和交通要分开核算。</li>
+      <li><b>数据会过期。</b>页面显示核验时间；申请前请逐项打开官方链接重新确认。</li>
+      <li><b>内容归属。</b>本专题参考海外路径网站的公开分类和字段化结构，不复制其文案、图片或页面设计。</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><a href="index.html">← 回到完整版：全球出国路径筛选</a></p>
+    <p>开源项目 · MIT License · 欢迎 PR 补充路径和纠错</p>
+    <p><a href="https://github.com/RadishXN/run-abroad" target="_blank" rel="noopener noreferrer">GitHub 仓库</a></p>
+  </div>
+</footer>
+
+<script src="js/student-data.js"></script>
+<script src="js/student.js"></script>
+</body>
+</html>
