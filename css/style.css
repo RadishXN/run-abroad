@@ -1100,14 +1100,61 @@ footer a:hover { color: var(--accent); border-bottom-color: var(--accent); }
   .card:hover, .primary:active { transform: none; }
 }
 
-.hero-alt { display: flex; gap: var(--s5); justify-content: center; flex-wrap: wrap; margin: var(--s4) 0 0; font-size: 13.5px; }
-.hero-alt a {
-  color: var(--accent);
-  text-decoration: none;
-  border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-  padding-bottom: 1px;
+.hero-alt {
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: fit-content;
+  max-width: 100%;
+  margin: var(--s5) auto 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--panel) 80%, transparent);
+  box-shadow: var(--shadow-sm);
 }
-.hero-alt a:hover { border-bottom-color: var(--accent); }
+.hero-alt a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--s2);
+  padding: 9px 15px;
+  color: var(--muted);
+  text-decoration: none;
+  border: 0;
+  border-right: 1px solid var(--line);
+  font-size: 12.5px;
+  white-space: nowrap;
+  transition: background .16s, color .16s;
+}
+.hero-alt a:last-child { border-right: 0; }
+.hero-alt a:hover { color: var(--accent); background: var(--accent-wash); }
+.hero-alt a.current { color: var(--accent); background: var(--accent-wash); font-weight: 600; }
+.hero-alt a small { font-size: 10.5px; font-weight: 400; color: var(--faint); }
+.hero-alt a.current small { color: var(--accent); opacity: .72; }
+
+@media (max-width: 620px) {
+  .hero-alt {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    border-radius: var(--r-md);
+  }
+  .hero-alt a {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 9px 5px;
+    font-size: 12px;
+    line-height: 1.35;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-alt a:nth-child(2n) { border-right: 0; }
+  .hero-alt a:nth-last-child(-n + 2) { border-bottom: 0; }
+  .hero-alt a small { font-size: 9.5px; }
+}
 
 /* ============================================================
    香港专题页
