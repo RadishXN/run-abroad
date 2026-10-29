@@ -372,6 +372,12 @@ legend em {
 }
 .chip input:focus-visible + span { box-shadow: var(--ring); }
 
+/* 国家细选：跟在地区下面，字号略小，和地区一行区分开 */
+.countries[hidden] { display: none; }
+.countries { margin-top: var(--s3); padding-top: var(--s3); border-top: 1px dashed var(--line); }
+.countries .chip span { padding: 5px 12px; font-size: 13px; }
+.countries .hint { width: 100%; font-size: 12.5px; color: var(--faint); }
+
 /* ── 按钮 ── */
 
 button { font: inherit; cursor: pointer; transition: all .16s; }

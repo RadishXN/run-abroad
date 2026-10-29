@@ -5,20 +5,23 @@ const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
 /* ── 表单选项 ───────────────────────────── */
 
+const pinyinCompare = (() => {
+  const fallbackCompare = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+  try {
+    const pinyin = new Intl.Collator('zh-CN-u-co-pinyin');
+    return (a, b) => pinyin.compare(a, b) || fallbackCompare(a, b);
+  } catch (_) {
+    // 极少数精简运行环境没有拼音排序数据，退回稳定的 Unicode 顺序。
+    return fallbackCompare;
+  }
+})();
+
 function orderIncomeSourceLocations(locations) {
   const first = ['中国大陆', '中国香港'];
   const last = '其他国家 / 地区';
-  const fallbackCompare = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
-  let compare = fallbackCompare;
-  try {
-    const pinyin = new Intl.Collator('zh-CN-u-co-pinyin');
-    compare = (a, b) => pinyin.compare(a, b) || fallbackCompare(a, b);
-  } catch (_) {
-    // 极少数精简运行环境没有拼音排序数据，退回稳定的 Unicode 顺序。
-  }
   const middle = locations
     .filter((location) => !first.includes(location) && location !== last)
-    .sort(compare);
+    .sort(pinyinCompare);
   return [...first.filter((location) => locations.includes(location)), ...middle,
     ...(locations.includes(last) ? [last] : [])];
 }
@@ -266,6 +269,41 @@ document.addEventListener('click', (e) => {
   }
 });
 
+/* ── 国家细选 ───────────────────────────────
+   国家选项从 PATHWAYS 里取，只列出已勾选地区下的国家。
+   「欧盟」不是一个国家，不单列：选了任一欧洲国家时，欧盟通用的路径一并保留。 */
+
+const EU_WIDE = '欧盟';
+
+function countriesOf(region) {
+  const set = new Set(PATHWAYS.map((p) => p.country)
+    .filter((c) => c !== EU_WIDE && REGION_OF[c] === region));
+  return [...set].sort(pinyinCompare);
+}
+
+function buildCountries(keep = checkedValues('country')) {
+  const regions = checkedValues('region');
+  const box = $('#countries');
+  const list = Object.keys(REGION_LABEL).filter((r) => regions.includes(r)).flatMap(countriesOf);
+  box.hidden = !list.length;
+  box.innerHTML = list.length
+    ? `<span class="hint">只看其中几个国家（不选 = 所选地区全部）</span>` +
+      list.map((c) => chip('country', c, c)).join('')
+    : '';
+  $$('[data-group="country"]').forEach((el) => { el.checked = keep.includes(el.value); });
+}
+
+function checkedValues(group) {
+  return $$(`[data-group="${group}"]:checked`).map((el) => el.value);
+}
+
+/** 路径是否落在所选国家内；欧盟通用路径在选了任一欧洲国家时保留。 */
+function inCountries(p, countries) {
+  if (!countries.size) return true;
+  if (countries.has(p.country)) return true;
+  return p.country === EU_WIDE && [...countries].some((c) => REGION_OF[c] === 'eu');
+}
+
 function chip(group, value, label, hint) {
   return `<label class="chip"${hint ? ` title="${hint}"` : ''}>
     <input type="checkbox" data-group="${group}" value="${value}">
@@ -376,11 +414,12 @@ function render() {
   renderFilterNote(bucket);
 }
 
-/** 当前生效的筛选条件。三者是「与」的关系。 */
+/** 当前生效的筛选条件。各项是「与」的关系。 */
 function activeFilters() {
   return {
     developed: $('#onlyDeveloped').checked,
-    regions: new Set($$('[data-group="region"]:checked').map((el) => el.value)),
+    regions: new Set(checkedValues('region')),
+    countries: new Set(checkedValues('country')),
     excludes: $$('[data-group="exclude"]:checked').map((el) => el.value),
   };
 }
@@ -389,6 +428,7 @@ function activeFilters() {
 function keeps(p, f, profile) {
   if (f.developed && !DEVELOPED.has(p.country)) return false;
   if (f.regions.size && !f.regions.has(REGION_OF[p.country])) return false;
+  if (!inCountries(p, f.countries)) return false;
   for (const key of f.excludes) {
     if (EXCLUDES[key]?.test(p, profile)) return false;
   }
@@ -397,7 +437,7 @@ function keeps(p, f, profile) {
 
 function applyFilters(bucket) {
   const f = activeFilters();
-  if (!f.developed && !f.regions.size && !f.excludes.length) return bucket;
+  if (!f.developed && !f.regions.size && !f.countries.size && !f.excludes.length) return bucket;
   const out = {};
   for (const k of Object.keys(bucket)) {
     out[k] = bucket[k].filter((r) => keeps(r.pathway, f, lastProfile));
@@ -426,6 +466,12 @@ function renderFilterNote() {
   if (f.regions.size) {
     const n = all.filter((r) => !f.regions.has(REGION_OF[r.pathway.country])).length;
     if (n) reasons.push(`地区不符 ${n} 条`);
+  }
+  if (f.countries.size) {
+    // 只数「地区对得上、国家对不上」的，避免和上一条重复计数
+    const n = all.filter((r) => (!f.regions.size || f.regions.has(REGION_OF[r.pathway.country])) &&
+      !inCountries(r.pathway, f.countries)).length;
+    if (n) reasons.push(`国家不符 ${n} 条`);
   }
   for (const key of f.excludes) {
     const n = all.filter((r) => EXCLUDES[key].test(r.pathway, lastProfile)).length;
@@ -460,7 +506,7 @@ function renderGroups(bucket) {
   const total = Object.values(bucket).reduce((n, list) => n + list.length, 0);
   if (!total) {
     $('#groups').innerHTML = `<div class="panel empty">
-      当前筛选条件下没有任何路径。取消「只看发达国家 / 地区」再看看。
+      当前筛选条件下没有任何路径。放宽地区 / 国家，或取消「只看发达国家 / 地区」再看看。
     </div>`;
     return;
   }
@@ -587,7 +633,8 @@ function syncUrl(p) {
     e: p.english, fr: p.french, w: p.workExp, f: p.funds, o: p.hasOffer ? 1 : 0,
     s: p.skills.join('.'), t: p.goals.join('.'), lg: p.langs.join('.'),
     dev: $('#onlyDeveloped').checked ? 1 : 0,
-    rg: $$('[data-group="region"]:checked').map((el) => el.value).join('.'),
+    rg: checkedValues('region').join('.'),
+    ct: checkedValues('country').join('.'),
     ex: $$('[data-group="exclude"]:checked').map((el) => el.value).join('.'),
   });
   if (!$('#ugRank').disabled) q.set('ug', p.ugRank);
@@ -621,6 +668,7 @@ function loadFromUrl() {
   check('goal', q.get('t'));
   check('lang', q.get('lg'));
   check('region', q.get('rg'));
+  buildCountries((q.get('ct') || '').split('.').filter(Boolean));
   check('exclude', q.get('ex'));
   $$('select').forEach(syncSelectUI);   // 回填后让自绘按钮显示正确的选项
   return true;
@@ -646,9 +694,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.id === 'incomeType' || e.target.id === 'remoteAbroad') updateIncomeFields();
     if (e.target.id === 'degree') updateDegreeFields();
     if (e.target.dataset?.group === 'skill') normalizeSkillSelection(e.target);
+    if (e.target.dataset?.group === 'region') buildCountries();
     if (!lastBucket) return;
     const g = e.target.dataset?.group;
-    if (e.target.id === 'onlyDeveloped' || g === 'region' || g === 'exclude') {
+    if (e.target.id === 'onlyDeveloped' || g === 'region' || g === 'country' || g === 'exclude') {
       syncUrl(lastProfile);
       render();
     }
