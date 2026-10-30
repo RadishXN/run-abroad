@@ -23,6 +23,7 @@
   req: {
     age: [18, 30],                 // 年龄区间
     minDeg: DEG.bachelor,          // none/highschool/college/bachelor/master/phd
+    allowCurrentStudent: true,       // 当前在读可满足 minDeg
     uniRank: 100,                  // 院校世界排名要求（50/100/200/500）
     gradWithin: 5,                 // 毕业几年内
     minEng: ENG.ielts55,           // none/daily/ielts55/ielts65/fluent
@@ -32,6 +33,7 @@
     jobOffer: true,                // 是否需要当地 offer
     fundsUSD: 3000,                // 资金证明（美元）
     studyIn: 'hk',                 // 学位必须在该地取得，见 STUDY_LOC
+    studyInAny: ['de', 'fr'],      // 在其中任一地区院校就读 / 毕业即可
     skills: ['tech', 'science'],   // 偏好的技能方向，满足其一即可
   },
   quota: '每年 1000 个名额',

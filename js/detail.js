@@ -27,10 +27,18 @@ function requirements(p) {
   const r = p.req || {};
   const rows = [];
   if (r.age) rows.push(['年龄', `${r.age[0]} – ${r.age[1] === 99 ? '不限' : r.age[1]} 岁`]);
-  if (r.minDeg != null) rows.push(['学历', `${DEG_LABEL[r.minDeg]}及以上`]);
+  if (r.minDeg != null) {
+    const label = r.allowCurrentStudent
+      ? `${DEG_LABEL[r.minDeg]}及以上，或当前本科在读`
+      : `${DEG_LABEL[r.minDeg]}及以上`;
+    rows.push(['学历', label]);
+  }
   if (r.uniRank != null) rows.push(['院校', `世界排名前 ${r.uniRank}`]);
   if (r.ugRank != null) rows.push(['本科院校', `世界排名前 ${r.ugRank}（QS${r.ugRank}），只看本科，硕博院校不算`]);
   if (r.studyIn) rows.push(['学位取得地', `必须在${STUDY_LOC[r.studyIn]}的院校取得`]);
+  if (r.studyInAny?.length) {
+    rows.push(['院校所在地', `需在以下地区之一的院校就读或毕业：${r.studyInAny.map((loc) => STUDY_LOC[loc]).join(' / ')}`]);
+  }
   if (r.gradWithin != null) rows.push(['毕业年限', `毕业 ${r.gradWithin} 年内`]);
   if (r.minEng != null) rows.push(['英语', ENG_LABEL[r.minEng]]);
   if (r.minFrench != null) rows.push(['法语', FRA_LABEL[r.minFrench]]);

@@ -171,8 +171,11 @@ function checkPathway(profile, p) {
     }
   }
 
-  // 学历
-  if (req.minDeg != null && profile.degree < req.minDeg) {
+  // 学历；部分路径也接受当前在读生（yearsSinceGrad 为 null）。
+  // 「还在读 / 尚未毕业」也可能是没读过大学的人，至少要有高中学历才算可能在读本科。
+  const currentStudent = profile.yearsSinceGrad == null && profile.degree >= DEG.highschool;
+  if (req.minDeg != null && profile.degree < req.minDeg &&
+      !(req.allowCurrentStudent && currentStudent)) {
     gaps.push({
       kind: SOFT, field: 'degree',
       text: `需要${DEG_LABEL[req.minDeg]}及以上学历，你目前是${DEG_LABEL[profile.degree]}`,
@@ -253,8 +256,14 @@ function checkPathway(profile, p) {
     if (gap) gaps.push(gap);
   }
 
-  // 学位就读地：部分路径只认在当地取得的学位
-  if (req.studyIn && profile.studyLoc !== req.studyIn) {
+  // 学位就读地：部分路径只认一个或一组指定地区的院校
+  if (req.studyInAny?.length && !req.studyInAny.includes(profile.studyLoc)) {
+    const locations = req.studyInAny.map((loc) => STUDY_LOC[loc]).join(' / ');
+    gaps.push({
+      kind: SOFT, field: 'studyIn',
+      text: `需在以下地区之一的院校就读或毕业：${locations}`,
+    });
+  } else if (req.studyIn && profile.studyLoc !== req.studyIn) {
     gaps.push({
       kind: SOFT, field: 'studyIn',
       text: `学位需在${STUDY_LOC[req.studyIn]}的院校取得（可先去读书再申请）`,

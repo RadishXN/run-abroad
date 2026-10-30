@@ -47,7 +47,7 @@ const STUDY_LOC = {
   // 欧洲逐国 —— 毕业后找工作签几乎都只认本国学位，
   // 笼统的「欧洲」会让德国学位错误匹配上瑞典、挪威的毕业签
   de: '德国', fr: '法国', nl: '荷兰', it: '意大利', es: '西班牙', pt: '葡萄牙',
-  se: '瑞典', no: '挪威', dk: '丹麦', fi: '芬兰', be: '比利时', at: '奥地利', pl: '波兰',
+  se: '瑞典', no: '挪威', dk: '丹麦', fi: '芬兰', be: '比利时', at: '奥地利', ch: '瑞士', pl: '波兰',
   eu: '其他欧洲国家',
   other: '其他国家 / 地区',
 };
@@ -153,6 +153,9 @@ const EXCLUDES = {
     // 很多「毕业生找工作签」类型上不叫留学，但前提是先在当地念完书。
     // 反过来，已经持有当地学位的人不需要再读，那些路径要保留。
     test: (p, profile) => {
+      if (p.req?.studyInAny?.length) {
+        return !p.req.studyInAny.includes(profile?.studyLoc);
+      }
       const needsLocal = !!p.req?.studyIn;
       if (needsLocal) return p.req.studyIn !== profile?.studyLoc;
       return ['study', 'vocational'].includes(p.type);
@@ -205,6 +208,8 @@ const TYPE_LABEL = {
  *   workExp(年)  jobOffer(bool)  fundsUSD  skills[](满足其一即可)
  *   income: { mode: remote|passive|either, minMonthlyUSD, foreignSource, shortfallHint? }
  *   studyIn: STUDY_LOC 的 key，表示学位必须在该地取得
+ *   studyInAny: STUDY_LOC key 数组，表示在其中任一地区院校就读 / 毕业即可
+ *   allowCurrentStudent: true 时，在读生可满足 minDeg（结合 yearsSinceGrad: null）
  */
 const PATHWAYS = [
   // ─────────────── 打工度假 / 快速出去 ───────────────
@@ -243,12 +248,17 @@ const PATHWAYS = [
     type: 'workholiday',
     duration: '6 个月，不可续',
     pr: '不通往永居，属于短期体验',
-    req: { age: [18, 25], minDeg: DEG.bachelor, uniRank: 200, minEng: ENG.daily },
+    req: {
+      age: [18, 25],
+      minDeg: DEG.bachelor,
+      allowCurrentStudent: true,
+      studyInAny: ['au', 'fr', 'de', 'hk', 'jp', 'nl', 'nz', 'ch', 'uk', 'us'],
+    },
     quota: '2000 个在效名额',
-    cost: 'S$180 申请费',
+    cost: 'S$175 通行证签发费；如适用，多次入境签证另加 S$30',
     difficulty: 2,
-    notes: '只对指定国家/地区院校的在读生或毕业生开放，年龄卡得很死（18–25）。时间短，适合当作了解新加坡就业市场的跳板，期间可无缝面试转 EP。',
-    official: 'https://www.mom.gov.sg/passes-and-permits/work-holiday-programme',
+    notes: '只对澳大利亚、法国、德国、香港、日本、荷兰、新西兰、瑞士、英国、美国的政府认可大学在读生或毕业生开放。本科在读申请前须已在当地作为全日制学生居住并就读至少 3 个月；年龄为 18–25 岁。',
+    official: 'https://www.mom.gov.sg/passes-and-permits/work-holiday-programme/eligibility/',
   },
   {
     id: 'ge-visafree',
@@ -1381,6 +1391,18 @@ function validatePathways() {
       if (!p[f]) problems.push(`${p.id} 缺少字段 ${f}`);
     }
     if (!TYPE_LABEL[p.type]) problems.push(`${p.id} 的 type "${p.type}" 未定义`);
+    if (p.req?.studyInAny && p.req?.studyIn) {
+      problems.push(`${p.id} 同时写了 studyIn 和 studyInAny，studyIn 会被忽略，请只保留一个`);
+    }
+    if (p.req?.studyInAny) {
+      if (!Array.isArray(p.req.studyInAny) || !p.req.studyInAny.length) {
+        problems.push(`${p.id} 的 studyInAny 必须是非空地区数组`);
+      } else {
+        for (const loc of p.req.studyInAny) {
+          if (!STUDY_LOC[loc]) problems.push(`${p.id} 的 studyInAny 地区 "${loc}" 未定义`);
+        }
+      }
+    }
     if (!REGION_OF[p.country]) problems.push(`${p.id} 的国家「${p.country}」未归入地区，请补 REGION_OF`);
     if (!AGGREGATE_PATHWAY_LOCATIONS.has(p.country) && !incomeSources.has(p.country)) {
       problems.push(`${p.id} 的国家「${p.country}」未加入 INCOME_SOURCE_LOCATIONS`);
