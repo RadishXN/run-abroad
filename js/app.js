@@ -301,7 +301,7 @@ function checkedValues(group) {
 function inCountries(p, countries) {
   if (!countries.size) return true;
   if (countries.has(p.country)) return true;
-  return p.country === EU_WIDE && [...countries].some((c) => REGION_OF[c] === 'eu');
+  return p.country === EU_WIDE && [...countries].some((c) => EU_MEMBERS.has(c));
 }
 
 function chip(group, value, label, hint) {

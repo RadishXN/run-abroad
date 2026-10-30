@@ -24,6 +24,7 @@
     age: [18, 30],                 // 年龄区间
     minDeg: DEG.bachelor,          // none/highschool/college/bachelor/master/phd
     allowCurrentStudent: true,       // 当前在读可满足 minDeg
+    degOrWorkExp: 5,               // 工作满 N 年可代替 minDeg 学历要求
     uniRank: 100,                  // 院校世界排名要求（50/100/200/500）
     gradWithin: 5,                 // 毕业几年内
     minEng: ENG.ielts55,           // none/daily/ielts55/ielts65/fluent

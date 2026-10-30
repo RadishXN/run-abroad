@@ -89,8 +89,11 @@ function checkIncome(profile, p, income) {
   const activeType = MATCH_ACTIVE_INCOME_TYPES.has(profile.incomeType);
   const passiveType = ['passive', 'mixed'].includes(profile.incomeType);
   const sourceKnown = !!profile.primaryIncomeCountry;
-  const sourceOk = !income.foreignSource ||
-    (sourceKnown && profile.primaryIncomeCountry !== p.country);
+  // sourceIn：收入来源 / 雇主注册地必须在指定名单内（如拉脱维亚要求 OECD 国家）
+  const sourceListed = !income.sourceIn ||
+    (sourceKnown && income.sourceIn.includes(profile.primaryIncomeCountry));
+  const sourceOk = sourceListed && (!income.foreignSource ||
+    (sourceKnown && profile.primaryIncomeCountry !== p.country));
   const activeAmount = compareIncomeBand(profile.activeIncome, income.minMonthlyUSD);
   const passiveAmount = compareIncomeBand(profile.passiveIncome, income.minMonthlyUSD);
 
@@ -109,7 +112,7 @@ function checkIncome(profile, p, income) {
   const remoteUnknown = incomeTypeUnknown || (activeType && (
     profile.remoteAbroad == null || profile.remoteAbroad === 'uncertain' ||
     (profile.remoteAbroad === 'yes' &&
-      (activeAmount === 'unknown' || (income.foreignSource && !sourceKnown)))
+      (activeAmount === 'unknown' || ((income.foreignSource || income.sourceIn) && !sourceKnown)))
   ));
   const passiveUnknown = incomeTypeUnknown ||
     (passiveType && passiveAmount === 'unknown');
@@ -128,6 +131,9 @@ function checkIncome(profile, p, income) {
     text = '当前工作不能长期在境外远程进行';
   } else if (checksRemote && activeType && profile.remoteAbroad === 'uncertain') {
     text = '需先确认当前工作是否允许长期在境外远程进行';
+  } else if (checksRemote && activeType && profile.remoteAbroad === 'yes' &&
+    sourceKnown && !sourceListed) {
+    text = income.sourceHint || '主要收入来源地不在该路径认可的国家 / 地区范围内';
   } else if (checksRemote && activeType && profile.remoteAbroad === 'yes' &&
     activeAmount === 'below') {
     text = withShortfallHint(`当前远程收入低于该路径约 ${threshold}的要求`);
@@ -174,8 +180,10 @@ function checkPathway(profile, p) {
   // 学历；部分路径也接受当前在读生（yearsSinceGrad 为 null）。
   // 「还在读 / 尚未毕业」也可能是没读过大学的人，至少要有高中学历才算可能在读本科。
   const currentStudent = profile.yearsSinceGrad == null && profile.degree >= DEG.highschool;
+  // degOrWorkExp：工作年限达标可代替学历（如欧盟蓝卡「学历或 5 年相关经验」）
   if (req.minDeg != null && profile.degree < req.minDeg &&
-      !(req.allowCurrentStudent && currentStudent)) {
+      !(req.allowCurrentStudent && currentStudent) &&
+      !(req.degOrWorkExp != null && profile.workExp >= req.degOrWorkExp)) {
     gaps.push({
       kind: SOFT, field: 'degree',
       text: `需要${DEG_LABEL[req.minDeg]}及以上学历，你目前是${DEG_LABEL[profile.degree]}`,
@@ -309,11 +317,13 @@ function checkPathway(profile, p) {
  * 这条路径是否真的通往永居。
  * 必须先排除否定表述 —— 「不通往永居」里同样含「永居」二字，
  * 直接做关键词匹配会把打工度假、数字游民签全部误判成永居路径。
+ * 「未明确」「需单独核实」这类不确定表述也按否处理，宁可少推不误推。
+ * 欧盟各国写作「长期居留」（EU long-term residence），日韩写作「永住」，同样算永居。
  */
 function leadsToPR(p) {
   const pr = p.pr || '';
-  if (/不通往|不直接通往|不计入|不挂钩|属于短期/.test(pr)) return false;
-  return /永居|绿卡|永久居民|长居|入籍|^是$/.test(pr);
+  if (/不通往|不直接通往|不计入|不挂钩|属于短期|未明确|需单独核实|规则以/.test(pr)) return false;
+  return /永居|永住|绿卡|永久居民|永久居留|长居|长期居留|国民居留卡|\bPR\b|入籍|国籍|^是/.test(pr);
 }
 
 /**

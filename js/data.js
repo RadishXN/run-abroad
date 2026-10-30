@@ -85,6 +85,24 @@ const INCOME_SOURCE_LOCATIONS = [
 
 const AGGREGATE_PATHWAY_LOCATIONS = new Set(['欧盟']);
 
+/**
+ * 欧盟 27 国。「欧盟」聚合路径（季节工指令、Erasmus Mundus 等）只在筛选这些国家时出现 ——
+ * REGION_OF 的 'eu' 是地理上的欧洲，包含英国、挪威、瑞士、阿尔巴尼亚等非欧盟国家。
+ */
+const EU_MEMBERS = new Set([
+  '爱尔兰', '荷兰', '德国', '法国', '葡萄牙', '西班牙', '意大利', '波兰', '芬兰', '瑞典',
+  '丹麦', '比利时', '奥地利', '斯洛文尼亚', '克罗地亚', '希腊', '匈牙利', '捷克', '斯洛伐克',
+  '罗马尼亚', '保加利亚', '爱沙尼亚', '拉脱维亚', '立陶宛', '卢森堡', '马耳他', '塞浦路斯',
+]);
+
+/** OECD 成员中出现在收入来源选项里的国家（以色列、冰岛、智利等未列入选项）。 */
+const OECD_MEMBERS = [
+  '日本', '韩国', '英国', '爱尔兰', '荷兰', '德国', '法国', '葡萄牙', '西班牙', '意大利', '波兰',
+  '芬兰', '瑞典', '挪威', '丹麦', '比利时', '奥地利', '斯洛文尼亚', '美国', '加拿大',
+  '澳大利亚', '新西兰', '希腊', '匈牙利', '捷克', '斯洛伐克', '爱沙尼亚', '拉脱维亚', '立陶宛',
+  '卢森堡', '瑞士', '土耳其', '墨西哥',
+];
+
 const SKILLS = {
   tech: 'IT / 软件开发',
   engineering: '工程 / 制造',
@@ -1719,7 +1737,7 @@ const PATHWAYS = [
     type: 'work',
     duration: '首期最长 2 年',
     pr: '4 年 + 年收入 €4 万，或 6 年 + 语言 B1 可申永居',
-    req: { minDeg: DEG.bachelor, minEng: ENG.ielts55, jobOffer: true },
+    req: { degOrWorkExp: 5, minDeg: DEG.bachelor, minEng: ENG.ielts55, jobOffer: true },
     quota: '无',
     cost: '线上申请约 €500',
     difficulty: 3,
@@ -1761,7 +1779,7 @@ const PATHWAYS = [
     type: 'work',
     duration: '最长 4 年',
     pr: '5 年可申长期居留，可累计其他欧盟国家蓝卡年限',
-    req: { minDeg: DEG.bachelor, minEng: ENG.ielts55, jobOffer: true },
+    req: { degOrWorkExp: 5, minDeg: DEG.bachelor, minEng: ENG.ielts55, jobOffer: true },
     quota: '无',
     cost: '居留卡税费约 €350',
     difficulty: 3,
@@ -1986,7 +2004,7 @@ const PATHWAYS = [
     type: 'nomad',
     duration: '居留最长 1 年，可每年续',
     pr: '合法居住 5 年可申长期居留',
-    req: { minDeg: DEG.bachelor, income: { mode: 'remote', minMonthlyUSD: 2300, foreignSource: true } },
+    req: { degOrWorkExp: 5, minDeg: DEG.bachelor, income: { mode: 'remote', minMonthlyUSD: 2300, foreignSource: true } },
     quota: '不占年度配额',
     cost: '签证费 + 居留许可费，另需保额 €3 万以上医保',
     difficulty: 3,
@@ -2042,7 +2060,7 @@ const PATHWAYS = [
     type: 'nomad',
     duration: '1 年 + 同理由再 1 年',
     pr: '不通往永居',
-    req: { income: { mode: 'remote', minMonthlyUSD: 4900, foreignSource: true } },
+    req: { income: { mode: 'remote', minMonthlyUSD: 4900, foreignSource: true, sourceIn: OECD_MEMBERS, sourceHint: '雇主或自雇注册地须在 OECD 国家，中国大陆、中国香港雇主不符合' } },
     quota: '无',
     cost: 'D 签证约 €90',
     difficulty: 3,
@@ -2211,7 +2229,7 @@ const PATHWAYS = [
     type: 'work',
     duration: '视合同，可续',
     pr: '连续合法居住 5 年可申长期居留',
-    req: { minDeg: DEG.college, minEng: ENG.ielts55, jobOffer: true },
+    req: { degOrWorkExp: 3, minDeg: DEG.college, minEng: ENG.ielts55, jobOffer: true },
     quota: '无',
     cost: '约 €600',
     difficulty: 3,
@@ -2311,7 +2329,7 @@ const PATHWAYS = [
     type: 'work',
     duration: '合同期 + 3 个月，最长 3 年',
     pr: '连续合法居住 5 年可申长期居留',
-    req: { minDeg: DEG.bachelor, minEng: ENG.ielts55, jobOffer: true },
+    req: { degOrWorkExp: 5, minDeg: DEG.bachelor, minEng: ENG.ielts55, jobOffer: true },
     quota: '无',
     cost: '约 PLN 440',
     difficulty: 3,
@@ -2536,7 +2554,7 @@ const PATHWAYS = [
     type: 'work',
     duration: '9 个月–4 年',
     pr: '持卡 36 个月起可考虑永居',
-    req: { minDeg: DEG.bachelor, minEng: ENG.ielts55, jobOffer: true },
+    req: { degOrWorkExp: 5, minDeg: DEG.bachelor, minEng: ENG.ielts55, jobOffer: true },
     quota: '无',
     cost: '雇主办理',
     difficulty: 3,
@@ -2636,7 +2654,7 @@ const PATHWAYS = [
     type: 'skilled',
     duration: '获提名后申请永居',
     pr: '是',
-    req: { minEng: ENG.ielts55, workExp: 1 },
+    req: { minEng: ENG.ielts55, workExp: 1, jobOffer: true },
     quota: '各省年度配额',
     cost: '省提名费 + 联邦永居申请费',
     difficulty: 3,
@@ -2762,7 +2780,7 @@ const PATHWAYS = [
     type: 'nomad',
     duration: '10 年（5 + 5）',
     pr: '不通往永居',
-    req: { minDeg: DEG.bachelor, income: { mode: 'either', minMonthlyUSD: 6700, foreignSource: true } },
+    req: { income: { mode: 'either', minMonthlyUSD: 6700, foreignSource: true } },
     quota: '无',
     cost: '签证费约 50,000 泰铢',
     difficulty: 3,
