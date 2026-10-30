@@ -8,8 +8,6 @@
 
 ![收录路径](https://img.shields.io/badge/收录路径-171-1d4ed8?style=for-the-badge)
 ![国家地区](https://img.shields.io/badge/国家·地区-51-0f766e?style=for-the-badge)
-![第三方依赖](https://img.shields.io/badge/第三方依赖-0-6d28d9?style=for-the-badge)
-![后端](https://img.shields.io/badge/后端-无-b45309?style=for-the-badge)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-purple)](CONTRIBUTING.md)
