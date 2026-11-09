@@ -13,6 +13,38 @@ const CONTRIBUTORS = {
 
 const UPDATES = [
   {
+    date: '2026-11-09',
+    title: '把新西兰技术移民 (SMC) 拆成三条路径',
+    author: 'dainiubi438-debug',
+    tags: ['政策更新', '数据修正', '新西兰'],
+    problem:
+      'SMC 原卡片写的是「2023 年改为 6 分制」，把整个 SMC 当作单一路径，并且设了 `minDeg: DEG.bachelor`。' +
+      '但新西兰移民局 2026-08-24 起把 SMC 改成了**三条并列路径**，满足任意一条即可；' +
+      '其中新设的两条恰恰**不要求本科学位**，是给多年经验型申请人和技工开的门。' +
+      '结果是无学位但有长期技术工作经验、或持 Level 4 资格的技工，会被这张卡片直接判成「暂时走不通」——' +
+      '对一个以「告诉你哪条路能走」为目标的初筛工具，这是漏报，不是保守估计。' +
+      '另外原文「累计到 6 分」容易被读成学历分和收入分可以相加，而官方明确禁止跨技能类别混算。',
+    change: [
+      '保留 `nz-smc` 这个 id（避免破坏已有分享链接与外链），改写为「积分制路径」，并在 notes 里明确 6 分须来自单一技能类别、只能与新西兰技术工作经验分组合。',
+      '新增 `nz-smc-work-exp`：5 年相关经验（含 2 年新西兰）、ANZSCO 1–3、薪资 ≥1.1× 门槛、不要求学位。写明 Red List 不可用、Amber List 加严到 1.2×、自雇不计入。',
+      '新增 `nz-smc-trades`：NZQCF Level 4+ 相关资格、4 年取得资格后的经验（含 1.5 年新西兰），按 `vocational` 类型建模。',
+      '三条都补了 detail（步骤 / 材料 / 坑 / 官方链接），并把 `nz-psw` 的 notes 同步为「三条路径的共同入口」。',
+      'README 路径数 171 → 173，大洋洲 9 → 11，新西兰 5 → 7，技术移民 6 → 8。',
+    ],
+    note:
+      '**两处引擎建模限制已写进各卡片的 pitfalls，没有假装判得准**：' +
+      '① `req` 各字段是 AND 关系，无法表达积分制路径的「学历 / 职业注册 / 收入三选一」——' +
+      '本 PR 按最常见的学历路径建模，靠职业注册或高收入拿分的无学位申请人要以官网为准；' +
+      '② `req.workExp` 只能表达总年数，无法表达「其中 2 年 / 1.5 年必须在新西兰」。' +
+      '这两处若要判准，需要扩展 `req` 字段，属于比本 PR 更大的改动，先明示、不硬套。' +
+      '另外 `cost` 字段沿用了原值未改，本 PR 只修资格路径，费用请另开 PR 核对。',
+    links: [
+      { t: 'SMC 三条路径总览（INZ 官方）', u: 'https://www.immigration.govt.nz/live/resident-visas-to-live-in-new-zealand/skilled-residence-pathways-in-new-zealand/skilled-migrant-category-pathway-to-residence/2026-changes-to-the-skilled-migrant-category-resident-visa/' },
+      { t: '2026-08-24 生效公告（INZ 官方）', u: 'https://www.immigration.govt.nz/about-us/news-centre/further-changes-to-the-skilled-migrant-category-to-come-into-effect-in-august-2026' },
+      { t: 'SMC 工资门槛费率表（INZ 官方）', u: 'https://www.immigration.govt.nz/live/resident-visas-to-live-in-new-zealand/skilled-residence-pathways-in-new-zealand/skilled-migrant-category-pathway-to-residence/pay-rates-for-the-skilled-migrant-category-resident-visa/' },
+    ],
+  },
+  {
     date: '2026-08-18',
     title: '把「有存款」和「有收入」分开',
     author: 'RagnTec',
