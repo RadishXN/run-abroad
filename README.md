@@ -6,7 +6,7 @@
 
 打工度假 · 找工作签 · 技术移民 · 欧盟蓝卡 · 数字游民 · 创业自雇 · 投资居留
 
-![收录路径](https://img.shields.io/badge/收录路径-171-1d4ed8?style=for-the-badge)
+![收录路径](https://img.shields.io/badge/收录路径-173-1d4ed8?style=for-the-badge)
 ![国家地区](https://img.shields.io/badge/国家·地区-51-0f766e?style=for-the-badge)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
@@ -99,7 +99,7 @@
 
 网上不缺移民信息，缺的是**针对你个人情况的筛选**。你会看到几十篇「XX 国签证全解析」，每一篇都在讲政策条文，但没有一篇会告诉你：你 31 岁、双非本科、雅思 6.0、工作 6 年——**这些条件下，哪条路现在就能走，哪条路差一点，哪条路已经彻底关上了。**
 
-这个项目不是又一份签证清单，而是一个**决策工具**：把你的条件和 171 条路径的门槛逐项比对，输出一份排过序的、标注了具体缺口的结果。
+这个项目不是又一份签证清单，而是一个**决策工具**：把你的条件和 173 条路径的门槛逐项比对，输出一份排过序的、标注了具体缺口的结果。
 
 <table>
 <tr>
@@ -205,10 +205,10 @@
 </details>
 
 <details open>
-<summary><b>大洋洲</b> · 2 个国家 / 地区 · 9 条路径</summary>
+<summary><b>大洋洲</b> · 2 个国家 / 地区 · 11 条路径</summary>
 
 <table>
-<tr><td align="center" width="16%">🇳🇿<br><b>新西兰</b><br><sub>5 条</sub></td><td align="center" width="16%">🇦🇺<br><b>澳大利亚</b><br><sub>4 条</sub></td></tr>
+<tr><td align="center" width="16%">🇳🇿<br><b>新西兰</b><br><sub>7 条</sub></td><td align="center" width="16%">🇦🇺<br><b>澳大利亚</b><br><sub>4 条</sub></td></tr>
 </table>
 
 </details>
@@ -233,7 +233,7 @@
 
 ---
 
-## 📋 收录的 171 条路径
+## 📋 收录的 173 条路径
 
 <sub>点开每一类查看完整清单。每条路径在网站上都有门槛、费用、永居前景、实操提醒和官网链接。</sub>
 
@@ -285,13 +285,13 @@
 </details>
 
 <details>
-<summary>🔧 <b>技术移民</b> · 6 条</summary>
+<summary>🔧 <b>技术移民</b> · 8 条</summary>
 
 | 国家 / 地区 | 路径 |
 |:---|:---|
 | 🇨🇦 加拿大 | 快速通道 (Express Entry) · Express Entry 法语类别定向邀请 · 省提名项目（PNP） |
 | 🇦🇺 澳大利亚 | 技术移民 189 / 190 / 491 |
-| 🇳🇿 新西兰 | 技术移民 (SMC) |
+| 🇳🇿 新西兰 | 技术移民 SMC · 积分制路径 · 技术工作经验路径 · 技工与技术路径 |
 | 🇯🇵 日本 | 高度专门职 (高度人才) |
 
 </details>
@@ -497,7 +497,7 @@ run-abroad/
     └── student-detail.js 学生路径详情渲染
 ```
 
-大学生专题独立维护 14 条路径，包含日本语言学校、加拿大 Co-op、德国 Ausbildung、澳新打工度假、美国 J-1、互惠生、船员和换宿平台等。平台与项目不会被伪装成签证，学生数据也不会计入主项目的 171 条路径。
+大学生专题独立维护 14 条路径，包含日本语言学校、加拿大 Co-op、德国 Ausbildung、澳新打工度假、美国 J-1、互惠生、船员和换宿平台等。平台与项目不会被伪装成签证，学生数据也不会计入主项目的 173 条路径。
 
 JS 文件按顺序用 `<script>` 引入，**刻意不做模块化和打包** —— 这样任何人都能直接改一行数据然后刷新看效果，降低贡献门槛。
 
